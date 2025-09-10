@@ -17,9 +17,16 @@ https://github.com/Cgiles8773/CS4530Project_u1345111_u1380461_u1536990/blob/main
   Unit testing: Automated tests that cover most of our implementation  
   Stretch goal: If all the above are completed, we can add save/load to user drawings.
 ## Layouts
-  
+  activity_splash.xml- intro screen
+  activity_main.xml- main draw
+  activity_brush_settings.xml- brush setttings can just leave in main if want, but could be seperate screen too ?, 
+  in my head this is a poput 
 ## Classes
-  
+brush - holds color shape size opacity
+coord - holds point storage
+strokes = whats drawn 
+mainactivity - main daw 
+draw - connects inputs 
 ## Tests
   Test data persistence for the screen
   Test pen customization
