@@ -20,4 +20,7 @@ TODO
 ## Classes
   
 ## Tests
-  
+  Test data persistence for the screen
+  Test pen customization
+  Test MVVM architecture functions
+  Test yo momma
