@@ -4,7 +4,8 @@ https://utah.instructure.com/courses/1173118/assignments/16216459 <- Link to thi
 # Group Members
 Collin Giles, Eric Nguyen, Josh Nguyen
 # Sketches & Wireframes
-TODO
+Link to images
+https://github.com/Cgiles8773/CS4530Project_u1345111_u1380461_u1536990/blob/main/Wireframe%26sketches.jpg
 # Task Breakdown - What, who, when
 ### Assignment Description:
   In the first phase, we aim for drawing functionality, and limited data persistence (i.e. the drawings don't need to be saved after the application is closed.)  
