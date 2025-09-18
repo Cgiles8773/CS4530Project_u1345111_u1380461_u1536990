@@ -40,14 +40,14 @@ draw - connects inputs
   Test MVVM architecture functions
   Test yo momma
 ## Task Assignment
-Jacob 
-- models
-- -connect ui
-- toolbar
-Collin 
-- create repo
-- layouts
--testings
-Eric
--layouts
-- integrate view model state
+Jacob  
+- models  
+- connect ui  
+- toolbar  
+Collin  
+- create repo  
+- layouts  
+- testings  
+Eric  
+- layouts  
+- integrate view model state  
