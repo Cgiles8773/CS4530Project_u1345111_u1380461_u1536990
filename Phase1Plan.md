@@ -35,10 +35,10 @@ mainactivity - main daw
 
 draw - connects inputs 
 ## Tests
-  Test data persistence for the screen
-  Test pen customization
-  Test MVVM architecture functions
-  Test yo momma
+  Test data persistence for the screen  
+  Test pen customization  
+  Test MVVM architecture functions  
+  Test yo momma  
 ## Task Assignment
 Jacob  
 - models  
