@@ -7,59 +7,66 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.lifecycle.ViewModel
-import com.example.phase1.ui.theme.Phase1Theme
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
-import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.ImageVector.Builder
-import androidx.compose.ui.graphics.vector.addPathNodes
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.phase1.ui.theme.Phase1Theme
 
 // ------------------------------------------------------
-// View Model
+// ViewModel (business + UI state)
 // ------------------------------------------------------
 class DrawingViewModel : ViewModel() {
+    // Drawing state
+    var strokes by mutableStateOf(listOf<List<Offset>>())
+        private set
+    private var currentStroke: List<Offset> = emptyList()
 
+    // UI state
+    var showSettings by mutableStateOf(false)
+        private set
+
+    var updateOpacity by mutableFloatStateOf(0.5f)
+        private set
+
+    fun startStroke(offset: Offset) {
+        currentStroke = listOf(offset)
+        strokes = strokes + listOf(currentStroke)
+    }
+
+    fun addPointToStroke(offset: Offset) {
+        currentStroke = currentStroke + offset
+        strokes = strokes.dropLast(1) + listOf(currentStroke)
+    }
+
+    fun endStroke() {
+        currentStroke = emptyList()
+    }
+
+    fun toggleSettings() {
+        showSettings = !showSettings
+    }
+
+    fun setOpacity(value: Float) {
+        updateOpacity = value
+    }
 }
+
 // ------------------------------------------------------
-// View
+// Activity (entry point, wires ViewModel + View)
 // ------------------------------------------------------
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,54 +74,68 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             Phase1Theme {
-                var showSettings by remember { mutableStateOf(false) }
-
-                Scaffold(
-                    floatingActionButton = {
-                        if(!showSettings) {
-                            FloatingActionButton(onClick = { showSettings = true }) {
-                                Icon(
-                                    Icons.Filled.Settings,
-                                    contentDescription = "Brush Settings"
-                                )
-                            }
-                        }
-                    }
-                ) { innerPadding ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding), // respect system bars
-                        contentAlignment = Alignment.Center
-                    ) {
-                        // Drawing area
-                        Box(
-                            modifier = Modifier
-                                .aspectRatio(1f)
-                                .fillMaxSize(0.95f)
-                                .border(5.dp, Color.Black)
-                        ) {
-                            DrawingCanvas()
-                        }
-                        // Settings window
-                        if (showSettings) {
-                            SettingsWindow(onDismiss = { showSettings = false })
-                        }
-                    }
-                }
+                val viewModel: DrawingViewModel = viewModel()
+                MainScreen(viewModel)
             }
         }
     }
 }
 
+// ------------------------------------------------------
+// Main Screen Composable (View layer)
+// ------------------------------------------------------
+@Composable
+fun MainScreen(viewModel: DrawingViewModel) {
+    Scaffold(
+        floatingActionButton = {
+            if (!viewModel.showSettings) {
+                FloatingActionButton(onClick = { viewModel.toggleSettings() }) {
+                    Icon(Icons.Filled.Settings, contentDescription = "Brush Settings")
+                }
+            }
+        }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentAlignment = Alignment.Center
+        ) {
+            // Drawing area
+            Box(
+                modifier = Modifier
+                    .aspectRatio(1f)
+                    .fillMaxSize(0.95f)
+                    .border(5.dp, Color.Black)
+            ) {
+                DrawingCanvas(viewModel)
+            }
+            // Settings window
+            if (viewModel.showSettings) {
+                SettingsWindow(
+                    opacity = viewModel.updateOpacity,
+                    onOpacityChange = { viewModel.setOpacity(it) },
+                    onDismiss = { viewModel.toggleSettings() }
+                )
+            }
+        }
+    }
+}
+
+// ------------------------------------------------------
+// Settings Window Composable
+// ------------------------------------------------------
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsWindow(onDismiss: () -> Unit) {
-    var sliderPosition by remember { mutableFloatStateOf(0.5f) }
+fun SettingsWindow(
+    opacity: Float,
+    onOpacityChange: (Float) -> Unit,
+    onDismiss: () -> Unit
+) {
     Dialog(onDismissRequest = { onDismiss() }) {
         Card(
             modifier = Modifier
-                .fillMaxWidth(0.9f)   // 90% of screen width
+                .fillMaxWidth(0.9f)
                 .wrapContentHeight()
                 .padding(16.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
@@ -127,13 +148,9 @@ fun SettingsWindow(onDismiss: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Title
-                Text(
-                    "Brush Settings",
-                    style = androidx.compose.material3.MaterialTheme.typography.titleMedium
-                )
+                Text("Brush Settings", style = MaterialTheme.typography.titleMedium)
 
-                // Color picker placeholder
+                // Placeholder color picker
                 Box(
                     modifier = Modifier
                         .size(150.dp)
@@ -150,46 +167,25 @@ fun SettingsWindow(onDismiss: () -> Unit) {
                 ) {
                     Text("Opacity", modifier = Modifier.width(80.dp))
                     Slider(
-                        value = sliderPosition,
-                        onValueChange = { sliderPosition = it},
+                        value = opacity,
+                        onValueChange = onOpacityChange,
                         modifier = Modifier.weight(1f),
                         valueRange = 0f..1f
                     )
                 }
 
-                // Brush shape buttons
+                // Brush shape buttons (not yet wired to VM)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Button(
-                        onClick = {},
-                        modifier = Modifier.size(64.dp)
-                    ) {
-                        //Square
-                        Text("Square")
-                    }
-                    Button(
-                        onClick = {},
-                        modifier = Modifier.size(64.dp)
-                    ) {
-                        //Circle
-                        Text("Circle")
-                    }
-                    Button(
-                        onClick = {},
-                        modifier = Modifier.size(64.dp)
-                    ) {
-                        //Triangle
-                        Text("Triangle")
-                    }
+                    Button(onClick = {}, modifier = Modifier.size(64.dp)) { Text("Square") }
+                    Button(onClick = {}, modifier = Modifier.size(64.dp)) { Text("Circle") }
+                    Button(onClick = {}, modifier = Modifier.size(64.dp)) { Text("Triangle") }
                 }
 
                 // Close button
-                Button(
-                    onClick = { onDismiss() },
-                    modifier = Modifier.align(Alignment.End)
-                ) {
+                Button(onClick = { onDismiss() }, modifier = Modifier.align(Alignment.End)) {
                     Text("Close")
                 }
             }
@@ -197,12 +193,11 @@ fun SettingsWindow(onDismiss: () -> Unit) {
     }
 }
 
-//Composable function that uses a Canvas composable to draw on the screen
+// ------------------------------------------------------
+// Drawing Canvas Composable
+// ------------------------------------------------------
 @Composable
-fun DrawingCanvas() {
-    var strokes by remember { mutableStateOf(listOf<List<Offset>>()) }
-    var currentStroke by remember { mutableStateOf(listOf<Offset>()) }
-
+fun DrawingCanvas(viewModel: DrawingViewModel) {
     Canvas(
         modifier = Modifier
             .fillMaxSize()
@@ -210,30 +205,20 @@ fun DrawingCanvas() {
             .clipToBounds()
             .pointerInput(Unit) {
                 detectDragGestures(
-                    onDragStart = { offset ->
-                        // Convert to local canvas coordinates
-                        val local = offset
-                        currentStroke = listOf(local)
-                        strokes = strokes + listOf(currentStroke)
-                    },
+                    onDragStart = { offset -> viewModel.startStroke(offset) },
                     onDrag = { change, _ ->
                         change.consume()
-                        // Convert to local canvas coordinates
-                        val local = change.position
-                        currentStroke = currentStroke + local
-                        strokes = strokes.dropLast(1) + listOf(currentStroke)
+                        viewModel.addPointToStroke(change.position)
                     },
-                    onDragEnd = {
-                        currentStroke = emptyList()
-                    }
+                    onDragEnd = { viewModel.endStroke() }
                 )
             }
     ) {
-        // Draw all completed strokes
-        strokes.forEach { stroke ->
+        // Draw all strokes from ViewModel
+        viewModel.strokes.forEach { stroke ->
             for (i in 0 until stroke.size - 1) {
                 drawLine(
-                    color = Color.Black,
+                    color = Color.Black.copy(alpha = viewModel.updateOpacity),
                     start = stroke[i],
                     end = stroke[i + 1],
                     strokeWidth = 8f
