@@ -8,62 +8,99 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.phase1.ui.theme.Phase1Theme
+import com.github.skydoves.colorpicker.compose.AlphaSlider
+import com.github.skydoves.colorpicker.compose.AlphaTile
+import com.github.skydoves.colorpicker.compose.BrightnessSlider
+import com.github.skydoves.colorpicker.compose.HsvColorPicker
+import com.github.skydoves.colorpicker.compose.rememberColorPickerController
+import kotlin.math.sqrt
 
 // ------------------------------------------------------
 // ViewModel (business + UI state)
 // ------------------------------------------------------
 class DrawingViewModel : ViewModel() {
-    // Drawing state
-    var strokes by mutableStateOf(listOf<List<Offset>>())
+    var strokes by mutableStateOf(listOf<Stroke>())
         private set
-    private var currentStroke: List<Offset> = emptyList()
+    private var currentStroke: Stroke? = null
 
-    // UI state
-    var showSettings by mutableStateOf(false)
-        private set
-
+    var brushColor by mutableStateOf(Color.Black)
+        internal set
     var updateOpacity by mutableFloatStateOf(0.5f)
         private set
 
-    fun startStroke(offset: Offset) {
-        currentStroke = listOf(offset)
-        strokes = strokes + listOf(currentStroke)
-    }
+    var showSettings by mutableStateOf(false)
+        private set
 
-    fun addPointToStroke(offset: Offset) {
-        currentStroke = currentStroke + offset
-        strokes = strokes.dropLast(1) + listOf(currentStroke)
-    }
-
-    fun endStroke() {
-        currentStroke = emptyList()
-    }
-
-    fun toggleSettings() {
-        showSettings = !showSettings
+    fun setBrushColor(color: Color) {
+        brushColor = color
     }
 
     fun setOpacity(value: Float) {
         updateOpacity = value
     }
+
+    fun startStroke(offset: Offset) {
+        currentStroke = Stroke(points = listOf(offset), color = brushColor, alpha = updateOpacity)
+        strokes = strokes + listOf(currentStroke!!)
+    }
+
+    fun addPointToStroke(offset: Offset) {
+        currentStroke = currentStroke?.copy(points = currentStroke!!.points + offset)
+        strokes = strokes.dropLast(1) + listOf(currentStroke!!)
+    }
+
+    fun endStroke() {
+        currentStroke = null
+    }
+
+    fun toggleSettings() {
+        showSettings = !showSettings
+    }
 }
+
 
 // ------------------------------------------------------
 // Activity (entry point, wires ViewModel + View)
@@ -101,7 +138,6 @@ fun MainScreen(viewModel: DrawingViewModel) {
                 .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
-            // Drawing area
             Box(
                 modifier = Modifier
                     .aspectRatio(1f)
@@ -110,11 +146,10 @@ fun MainScreen(viewModel: DrawingViewModel) {
             ) {
                 DrawingCanvas(viewModel)
             }
-            // Settings window
+
             if (viewModel.showSettings) {
                 SettingsWindow(
-                    opacity = viewModel.updateOpacity,
-                    onOpacityChange = { viewModel.setOpacity(it) },
+                    viewModel = viewModel,
                     onDismiss = { viewModel.toggleSettings() }
                 )
             }
@@ -122,17 +157,14 @@ fun MainScreen(viewModel: DrawingViewModel) {
     }
 }
 
+
 // ------------------------------------------------------
 // Settings Window Composable
 // ------------------------------------------------------
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsWindow(
-    opacity: Float,
-    onOpacityChange: (Float) -> Unit,
-    onDismiss: () -> Unit
-) {
-    Dialog(onDismissRequest = { onDismiss() }) {
+fun SettingsWindow(viewModel: DrawingViewModel, onDismiss: () -> Unit) {
+    Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
                 .fillMaxWidth(0.9f)
@@ -150,38 +182,71 @@ fun SettingsWindow(
             ) {
                 Text("Brush Settings", style = MaterialTheme.typography.titleMedium)
 
-                // Placeholder color picker
-                Box(
-                    modifier = Modifier
-                        .size(150.dp)
-                        .border(2.dp, Color.Black, RoundedCornerShape(8.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("Color Picker")
-                }
+                ColorPicker(onColorSelected = { viewModel.setBrushColor(it) })
 
-                // Opacity slider
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Opacity", modifier = Modifier.width(80.dp))
-                    Slider(
-                        value = opacity,
-                        onValueChange = onOpacityChange,
-                        modifier = Modifier.weight(1f),
-                        valueRange = 0f..1f
-                    )
-                }
-
-                // Brush shape buttons (not yet wired to VM)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Button(onClick = {}, modifier = Modifier.size(64.dp)) { Text("Square") }
-                    Button(onClick = {}, modifier = Modifier.size(64.dp)) { Text("Circle") }
-                    Button(onClick = {}, modifier = Modifier.size(64.dp)) { Text("Triangle") }
+                    //Square
+                    Button(onClick = {}, modifier = Modifier.size(64.dp)) {
+                        Box(
+                            modifier = Modifier
+                                .drawBehind {
+                                    val side = size.height * .65f
+                                    val left = (size.width - side) / 2
+                                    val top = (size.height - side) / 2
+                                    drawRect(
+                                        color = Color.White,
+                                        topLeft = Offset(left, top),
+                                        size = Size(side, side)
+                                    )
+                                }
+                                .fillMaxSize()
+                        )
+                    }
+                    //Circle
+                    Button(onClick = {}, modifier = Modifier.size(64.dp)) {
+                        Canvas(modifier = Modifier.fillMaxSize()) {
+                            drawCircle(color = Color.White, radius = size.minDimension)
+                        }
+                    }
+                    //Triangle
+                    Button(onClick = {}, modifier = Modifier.size(64.dp)) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .drawBehind {
+                                    // Side length (use minDimension so triangle fits); shrink a bit for padding
+                                    val s = size.height * 0.65f
+
+                                    // Height of an equilateral triangle: h = s * sqrt(3) / 2
+                                    val h = (s * sqrt(3.0) / 2.0).toFloat()
+
+                                    // Center of the box
+                                    val cx = size.width / 2f
+                                    val cy = size.height / 2f + 10f
+
+                                    // If centroid is at (cx, cy):
+                                    // apex Y = cy - 2h/3, base Y = cy + h/3
+                                    val apexX = cx
+                                    val apexY = cy - (2f * h / 3f)
+                                    val leftX = cx - s / 2f
+                                    val leftY = cy + h / 3f
+                                    val rightX = cx + s / 2f
+                                    val rightY = leftY
+
+                                    val path = Path().apply {
+                                        moveTo(apexX, apexY)
+                                        lineTo(leftX, leftY)
+                                        lineTo(rightX, rightY)
+                                        close()
+                                    }
+
+                                    drawPath(path, color = Color.White)
+                                }
+                        )
+                    }
                 }
 
                 // Close button
@@ -214,16 +279,65 @@ fun DrawingCanvas(viewModel: DrawingViewModel) {
                 )
             }
     ) {
-        // Draw all strokes from ViewModel
         viewModel.strokes.forEach { stroke ->
-            for (i in 0 until stroke.size - 1) {
+            val points = stroke.points
+            for (i in 0 until points.size - 1) {
                 drawLine(
-                    color = Color.Black.copy(alpha = viewModel.updateOpacity),
-                    start = stroke[i],
-                    end = stroke[i + 1],
+                    color = stroke.color.copy(alpha = stroke.alpha),
+                    start = points[i],
+                    end = points[i + 1],
                     strokeWidth = 8f
                 )
             }
         }
     }
 }
+
+// ------------------------------------------------------
+// Color Picker Composable
+// ------------------------------------------------------
+// Code modified by Collin Giles
+// Source: https://www.geeksforgeeks.org/kotlin/color-picker-in-android-using-jetpack-compose/#
+@Composable
+fun ColorPicker(onColorSelected: (Color) -> Unit) {
+    val controller = rememberColorPickerController()
+
+    Column(modifier = Modifier.padding(5.dp)) {
+        AlphaTile(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp)
+                .clip(RoundedCornerShape(6.dp)),
+            controller = controller
+        )
+        HsvColorPicker(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .padding(10.dp),
+            controller = controller,
+            onColorChanged = { colorEnvelope -> onColorSelected(colorEnvelope.color) }
+        )
+        AlphaSlider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+                .height(35.dp),
+            controller = controller,
+            tileOddColor = Color.White,
+            tileEvenColor = Color.Black
+        )
+        BrightnessSlider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+                .height(35.dp),
+            controller = controller
+        )
+    }
+}
+data class Stroke(
+    val points: List<Offset>,
+    val color: Color,
+    val alpha: Float
+)

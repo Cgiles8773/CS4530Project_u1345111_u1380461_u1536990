@@ -40,7 +40,8 @@ android {
 }
 
 dependencies {
-
+    implementation(libs.androidx.graphics.shapes)
+    implementation(libs.colorpicker.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
