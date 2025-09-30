@@ -68,7 +68,7 @@ class DrawingViewModel : ViewModel() {
 
     var brushColor by mutableStateOf(Color.Black)
         internal set
-    var updateOpacity by mutableFloatStateOf(0.5f)
+    var updateOpacity by mutableFloatStateOf(1f)
         private set
 
     var showSettings by mutableStateOf(false)
@@ -286,7 +286,7 @@ fun DrawingCanvas(viewModel: DrawingViewModel) {
                     color = stroke.color.copy(alpha = stroke.alpha),
                     start = points[i],
                     end = points[i + 1],
-                    strokeWidth = 8f
+                    strokeWidth = 12f
                 )
             }
         }
