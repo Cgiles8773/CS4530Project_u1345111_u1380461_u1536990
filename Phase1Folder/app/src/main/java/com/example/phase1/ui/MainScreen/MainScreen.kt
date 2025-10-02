@@ -15,15 +15,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.phase1.DrawingCanvas
-import com.example.phase1.SettingsWindow
+import androidx.navigation.NavController
 import com.example.phase1.vm.DrawingViewModel
 
 // ------------------------------------------------------
 // Main Screen Composable (View layer)
 // ------------------------------------------------------
 @Composable
-fun MainScreen(viewModel: DrawingViewModel) {
+fun MainScreen(navController: NavController, viewModel: DrawingViewModel) {
     Scaffold(
         floatingActionButton = {
             if (!viewModel.showSettings) {
