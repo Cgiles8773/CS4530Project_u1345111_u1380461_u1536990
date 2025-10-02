@@ -2,8 +2,11 @@
  * Eric Nguyen, Jacob Nguyen, Collin Giles
  * Fall 2025, CS4530
  *
- * This file contains the NavGraph which handles the navigation between screens of the app
+ * This file defines the navigation graph for the application.
+ * It manages navigation between the SplashScreen and MainScreen,
+ * and ensures lifecycle-aware usage of the DrawingViewModel.
  */
+
 package com.example.phase1.ui.Navigation
 
 import androidx.compose.runtime.Composable

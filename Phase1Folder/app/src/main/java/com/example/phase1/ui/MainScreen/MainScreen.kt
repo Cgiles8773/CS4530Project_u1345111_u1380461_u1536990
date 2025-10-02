@@ -1,3 +1,13 @@
+/**
+ * Eric Nguyen, Jacob Nguyen, Collin Giles
+ * Fall 2025, CS4530
+ *
+ * This file implements the MainScreen composable, which serves
+ * as the primary drawing screen. It displays the DrawingCanvas,
+ * conditionally shows the SettingsWindow, and includes a floating
+ * action button for toggling brush settings.
+ */
+
 package com.example.phase1.ui.MainScreen
 
 import androidx.compose.foundation.border
@@ -17,6 +27,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.phase1.vm.DrawingViewModel
+
+
+/**
+ * Eric Nguyen, Jacob Nguyen, Collin Giles
+ * Fall 2025, CS4530
+ *
+ * This file implements the MainScreen composable, which serves
+ * as the primary drawing screen. It displays the DrawingCanvas,
+ * conditionally shows the SettingsWindow, and includes a floating
+ * action button for toggling brush settings.
+ */
 
 // ------------------------------------------------------
 // Main Screen Composable (View layer)

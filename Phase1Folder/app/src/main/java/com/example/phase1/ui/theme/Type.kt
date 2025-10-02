@@ -1,3 +1,11 @@
+/**
+ * Eric Nguyen, Jacob Nguyen, Collin Giles
+ * Fall 2025, CS4530
+ *
+ * This file defines typography styles used throughout the
+ * application, based on Material 3 guidelines.
+ */
+
 package com.example.phase1.ui.theme
 
 import androidx.compose.material3.Typography

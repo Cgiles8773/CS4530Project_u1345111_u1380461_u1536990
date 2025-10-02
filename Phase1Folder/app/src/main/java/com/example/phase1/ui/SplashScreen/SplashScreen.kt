@@ -2,8 +2,11 @@
  * Eric Nguyen, Jacob Nguyen, Collin Giles
  * Fall 2025, CS4530
  *
- * This file implements the splash screen animation.
+ * This file implements the SplashScreen composable, which shows
+ * a simple animated splash screen and navigates to the main
+ * drawing screen after a short delay.
  */
+
 package com.example.phase1.ui.SplashScreen
 
 import androidx.compose.foundation.background

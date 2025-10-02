@@ -1,3 +1,12 @@
+/**
+ * Eric Nguyen, Jacob Nguyen, Collin Giles
+ * Fall 2025, CS4530
+ *
+ * This file implements the ColorPicker composable, which provides
+ * UI controls for selecting pen color, brightness, and alpha transparency
+ * using the skydoves color picker library.
+ */
+
 package com.example.phase1.ui.MainScreen
 
 import androidx.compose.foundation.layout.Column
@@ -15,6 +24,7 @@ import com.github.skydoves.colorpicker.compose.AlphaTile
 import com.github.skydoves.colorpicker.compose.BrightnessSlider
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
+
 
 // ------------------------------------------------------
 // Color Picker Composable

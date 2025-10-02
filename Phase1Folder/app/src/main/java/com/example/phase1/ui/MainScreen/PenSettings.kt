@@ -1,3 +1,13 @@
+/**
+ * Eric Nguyen, Jacob Nguyen, Collin Giles
+ * Fall 2025, CS4530
+ *
+ * This file implements the SettingsWindow composable, which provides
+ * a dialog UI for customizing brush settings. Users can select brush
+ * color (via the ColorPicker) and brush shape (square, circle, triangle).
+ * The dialog also includes a close button to dismiss the settings window.
+ */
+
 package com.example.phase1.ui.MainScreen
 
 import androidx.compose.foundation.Canvas
@@ -29,6 +39,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.phase1.vm.DrawingViewModel
 import kotlin.math.sqrt
+
+/**
+ * Eric Nguyen, Jacob Nguyen, Collin Giles
+ * Fall 2025, CS4530
+ *
+ * This file implements the SettingsWindow composable, which provides
+ * a dialog UI for customizing brush settings. Users can select brush
+ * color (via the ColorPicker) and brush shape (square, circle, triangle).
+ * The dialog also includes a close button to dismiss the settings window.
+ */
+
 
 // ------------------------------------------------------
 // Settings Window Composable

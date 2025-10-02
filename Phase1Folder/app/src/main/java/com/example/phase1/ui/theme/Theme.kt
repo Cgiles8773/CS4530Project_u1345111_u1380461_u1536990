@@ -1,3 +1,12 @@
+/**
+ * Eric Nguyen, Jacob Nguyen, Collin Giles
+ * Fall 2025, CS4530
+ *
+ * This file defines the Material 3 theme for the application.
+ * It provides light and dark color schemes, and applies them
+ * dynamically depending on system settings or device support.
+ */
+
 package com.example.phase1.ui.theme
 
 import android.app.Activity

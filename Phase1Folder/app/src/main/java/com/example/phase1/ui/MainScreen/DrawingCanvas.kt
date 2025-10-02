@@ -1,3 +1,15 @@
+
+/**
+ * Eric Nguyen, Jacob Nguyen, Collin Giles
+ * Fall 2025, CS4530
+ *
+ * This file implements the DrawingCanvas composable, which handles
+ * user touch input for drawing. It delegates stroke management to
+ * the DrawingViewModel and renders strokes in different shapes
+ * (circle, square, triangle).
+ */
+
+
 package com.example.phase1.ui.MainScreen
 
 import androidx.compose.foundation.Canvas
@@ -11,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.input.pointer.pointerInput
 import com.example.phase1.vm.DrawingViewModel
+
 
 // ------------------------------------------------------
 // Drawing Canvas Composable
