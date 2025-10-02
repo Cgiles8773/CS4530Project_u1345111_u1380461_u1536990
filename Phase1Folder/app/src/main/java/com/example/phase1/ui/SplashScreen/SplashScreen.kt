@@ -38,7 +38,7 @@ fun SplashScreen(navController: NavController) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Splash Screen",
+            text = "Demo Splash Screen",
             color = Color.White,
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold
