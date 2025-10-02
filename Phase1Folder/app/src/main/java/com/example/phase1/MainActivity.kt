@@ -58,10 +58,26 @@ import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import kotlin.math.sqrt
 
+// Helper classes
+enum class BrushShape {
+    Square, Circle, Triangle
+}
+
+data class Stroke(
+    val points: List<Offset>,
+    val color: Color,
+    val alpha: Float,
+    val shape: BrushShape
+)
+
+
+
 // ------------------------------------------------------
 // ViewModel (business + UI state)
 // ------------------------------------------------------
 class DrawingViewModel : ViewModel() {
+
+
     var strokes by mutableStateOf(listOf<Stroke>())
         private set
     private var currentStroke: Stroke? = null
@@ -74,16 +90,19 @@ class DrawingViewModel : ViewModel() {
     var showSettings by mutableStateOf(false)
         private set
 
+    // Default Brush
+    var brushShape = BrushShape.Square
     fun setBrushColor(color: Color) {
         brushColor = color
     }
+
 
     fun setOpacity(value: Float) {
         updateOpacity = value
     }
 
     fun startStroke(offset: Offset) {
-        currentStroke = Stroke(points = listOf(offset), color = brushColor, alpha = updateOpacity)
+        currentStroke = Stroke(points = listOf(offset), color = brushColor, alpha = updateOpacity, shape = brushShape)
         strokes = strokes + listOf(currentStroke!!)
     }
 
@@ -189,7 +208,7 @@ fun SettingsWindow(viewModel: DrawingViewModel, onDismiss: () -> Unit) {
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     //Square
-                    Button(onClick = {}, modifier = Modifier.size(64.dp)) {
+                    Button(onClick = {viewModel.brushShape = (BrushShape.Square)}, modifier = Modifier.size(64.dp)) {
                         Box(
                             modifier = Modifier
                                 .drawBehind {
@@ -205,14 +224,15 @@ fun SettingsWindow(viewModel: DrawingViewModel, onDismiss: () -> Unit) {
                                 .fillMaxSize()
                         )
                     }
+
                     //Circle
-                    Button(onClick = {}, modifier = Modifier.size(64.dp)) {
+                    Button(onClick = {viewModel.brushShape = (BrushShape.Circle)}, modifier = Modifier.size(64.dp)) {
                         Canvas(modifier = Modifier.fillMaxSize()) {
                             drawCircle(color = Color.White, radius = size.minDimension)
                         }
                     }
                     //Triangle
-                    Button(onClick = {}, modifier = Modifier.size(64.dp)) {
+                    Button(onClick = {viewModel.brushShape = (BrushShape.Triangle)}, modifier = Modifier.size(64.dp)) {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -282,12 +302,40 @@ fun DrawingCanvas(viewModel: DrawingViewModel) {
         viewModel.strokes.forEach { stroke ->
             val points = stroke.points
             for (i in 0 until points.size - 1) {
-                drawLine(
-                    color = stroke.color.copy(alpha = stroke.alpha),
-                    start = points[i],
-                    end = points[i + 1],
-                    strokeWidth = 12f
-                )
+
+                // Draw based on the shape selected
+                when (stroke.shape) {
+
+                    BrushShape.Square -> drawLine(
+                        color = stroke.color.copy(alpha = stroke.alpha),
+                        start = points[i],
+                        end = points[i + 1],
+                        strokeWidth = 12f
+                    )
+
+                    BrushShape.Circle -> drawCircle(
+                        color = stroke.color.copy(alpha = stroke.alpha),
+                        radius = 6f,
+                        center = points[i]
+                    )
+
+                    BrushShape.Triangle -> {
+                        val halfSize = 6f
+
+                        val trianglePath = Path().apply {
+                            moveTo(points[i].x, points[i].y - halfSize) // Top vertex
+                            lineTo(points[i].x - halfSize, points[i].y + halfSize) // Bottom left
+                            lineTo(points[i].x + halfSize, points[i].y + halfSize) // Bottom right
+                            close() // Connect back to top
+                        }
+
+                        drawPath(
+                            path = trianglePath,
+                            color = stroke.color.copy(alpha = stroke.alpha)
+                        )
+                    }
+                }
+
             }
         }
     }
@@ -336,8 +384,3 @@ fun ColorPicker(onColorSelected: (Color) -> Unit) {
         )
     }
 }
-data class Stroke(
-    val points: List<Offset>,
-    val color: Color,
-    val alpha: Float
-)
