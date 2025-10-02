@@ -52,74 +52,13 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.phase1.ui.theme.Phase1Theme
+import com.example.phase1.vm.DrawingViewModel
 import com.github.skydoves.colorpicker.compose.AlphaSlider
 import com.github.skydoves.colorpicker.compose.AlphaTile
 import com.github.skydoves.colorpicker.compose.BrightnessSlider
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import kotlin.math.sqrt
-
-// Helper classes
-enum class BrushShape {
-    Square, Circle, Triangle
-}
-
-data class Stroke(
-    val points: List<Offset>,
-    val color: Color,
-    val alpha: Float,
-    val shape: BrushShape
-)
-
-
-
-// ------------------------------------------------------
-// ViewModel (business + UI state)
-// ------------------------------------------------------
-class DrawingViewModel : ViewModel() {
-
-
-    var strokes by mutableStateOf(listOf<Stroke>())
-        private set
-    private var currentStroke: Stroke? = null
-
-    var brushColor by mutableStateOf(Color.Black)
-        internal set
-    var updateOpacity by mutableFloatStateOf(1f)
-        private set
-
-    var showSettings by mutableStateOf(false)
-        private set
-
-    // Default Brush
-    var brushShape = BrushShape.Square
-    fun setBrushColor(color: Color) {
-        brushColor = color
-    }
-
-
-    fun setOpacity(value: Float) {
-        updateOpacity = value
-    }
-
-    fun startStroke(offset: Offset) {
-        currentStroke = Stroke(points = listOf(offset), color = brushColor, alpha = updateOpacity, shape = brushShape)
-        strokes = strokes + listOf(currentStroke!!)
-    }
-
-    fun addPointToStroke(offset: Offset) {
-        currentStroke = currentStroke?.copy(points = currentStroke!!.points + offset)
-        strokes = strokes.dropLast(1) + listOf(currentStroke!!)
-    }
-
-    fun endStroke() {
-        currentStroke = null
-    }
-
-    fun toggleSettings() {
-        showSettings = !showSettings
-    }
-}
 
 
 // ------------------------------------------------------
@@ -209,7 +148,7 @@ fun SettingsWindow(viewModel: DrawingViewModel, onDismiss: () -> Unit) {
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     //Square
-                    Button(onClick = {viewModel.brushShape = (BrushShape.Square)}, modifier = Modifier.size(64.dp)) {
+                    Button(onClick = {viewModel.brushShape = (DrawingViewModel.BrushShape.Square)}, modifier = Modifier.size(64.dp)) {
                         Box(
                             modifier = Modifier
                                 .drawBehind {
@@ -227,13 +166,13 @@ fun SettingsWindow(viewModel: DrawingViewModel, onDismiss: () -> Unit) {
                     }
 
                     //Circle
-                    Button(onClick = {viewModel.brushShape = (BrushShape.Circle)}, modifier = Modifier.size(64.dp)) {
+                    Button(onClick = {viewModel.brushShape = (DrawingViewModel.BrushShape.Circle)}, modifier = Modifier.size(64.dp)) {
                         Canvas(modifier = Modifier.fillMaxSize()) {
                             drawCircle(color = Color.White, radius = size.minDimension)
                         }
                     }
                     //Triangle
-                    Button(onClick = {viewModel.brushShape = (BrushShape.Triangle)}, modifier = Modifier.size(64.dp)) {
+                    Button(onClick = {viewModel.brushShape = (DrawingViewModel.BrushShape.Triangle)}, modifier = Modifier.size(64.dp)) {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -307,20 +246,20 @@ fun DrawingCanvas(viewModel: DrawingViewModel) {
                 // Draw based on the shape selected
                 when (stroke.shape) {
 
-                    BrushShape.Square -> drawLine(
+                    DrawingViewModel.BrushShape.Square -> drawLine(
                         color = stroke.color.copy(alpha = stroke.alpha),
                         start = points[i],
                         end = points[i + 1],
                         strokeWidth = 12f
                     )
 
-                    BrushShape.Circle -> drawCircle(
+                    DrawingViewModel.BrushShape.Circle -> drawCircle(
                         color = stroke.color.copy(alpha = stroke.alpha),
                         radius = 6f,
                         center = points[i]
                     )
 
-                    BrushShape.Triangle -> {
+                    DrawingViewModel.BrushShape.Triangle -> {
                         val halfSize = 6f
 
                         val trianglePath = Path().apply {
