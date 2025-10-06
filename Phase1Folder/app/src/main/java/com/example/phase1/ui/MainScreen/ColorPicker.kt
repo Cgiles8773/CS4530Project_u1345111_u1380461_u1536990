@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -32,9 +33,11 @@ import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 // Code modified by Collin Giles
 // Source: https://www.geeksforgeeks.org/kotlin/color-picker-in-android-using-jetpack-compose/#
 @Composable
-fun ColorPicker(onColorSelected: (Color) -> Unit) {
+fun ColorPicker(onColorSelected: (Color) -> Unit, initialColor: Color) {
     val controller = rememberColorPickerController()
-
+    LaunchedEffect(initialColor) {
+        controller.selectByColor(initialColor, true)
+    }
     Column(modifier = Modifier.padding(5.dp)) {
         AlphaTile(
             modifier = Modifier

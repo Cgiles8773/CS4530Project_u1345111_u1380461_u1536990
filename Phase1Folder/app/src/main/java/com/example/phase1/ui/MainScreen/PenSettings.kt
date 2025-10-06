@@ -75,7 +75,7 @@ fun SettingsWindow(viewModel: DrawingViewModel, onDismiss: () -> Unit) {
             ) {
                 Text("Brush Settings", style = MaterialTheme.typography.titleMedium)
 
-                ColorPicker(onColorSelected = { viewModel.setBrushColor(it) })
+                ColorPicker(onColorSelected = { viewModel.setBrushColor(it) }, viewModel.brushColor)
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
