@@ -12,14 +12,17 @@ package com.example.phase1.ui.MainScreen
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,20 +62,23 @@ fun MainScreen(navController: NavController, viewModel: DrawingViewModel) {
                 .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier
-                    .aspectRatio(1f)
-                    .fillMaxSize(0.95f)
-                    .border(5.dp, Color.Black)
-            ) {
-                DrawingCanvas(viewModel)
-            }
-
-            if (viewModel.showSettings) {
-                SettingsWindow(
-                    viewModel = viewModel,
-                    onDismiss = { viewModel.toggleSettings() }
-                )
+            Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally)
+            {
+                Box(
+                    modifier = Modifier
+                        .aspectRatio(1f)
+                        .fillMaxSize(0.95f)
+                        .border(5.dp, Color.Black)
+                ) {
+                    DrawingCanvas(viewModel)
+                }
+                Button(onClick = { viewModel.clearCanvas() }) { Text("Clear") }
+                if (viewModel.showSettings) {
+                    SettingsWindow(
+                        viewModel = viewModel,
+                        onDismiss = { viewModel.toggleSettings() }
+                    )
+                }
             }
         }
     }

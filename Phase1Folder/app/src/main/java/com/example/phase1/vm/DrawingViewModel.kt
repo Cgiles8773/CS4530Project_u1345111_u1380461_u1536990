@@ -34,7 +34,7 @@ class DrawingViewModel : ViewModel() {
         private set
     private var currentStroke: Stroke? = null
 
-    var brushColor by mutableStateOf(Color.Black)
+    var brushColor by mutableStateOf(Color.Blue)
         internal set
 
     var showSettings by mutableStateOf(false)
@@ -62,5 +62,10 @@ class DrawingViewModel : ViewModel() {
 
     fun toggleSettings() {
         showSettings = !showSettings
+    }
+
+    fun clearCanvas() {
+        strokes = emptyList()
+        currentStroke = null
     }
 }
