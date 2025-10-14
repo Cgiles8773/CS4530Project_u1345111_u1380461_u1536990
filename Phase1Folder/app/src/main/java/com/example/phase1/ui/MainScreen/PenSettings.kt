@@ -26,6 +26,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,6 +39,8 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.phase1.vm.DrawingViewModel
+import kotlin.math.floor
+import kotlin.math.log
 import kotlin.math.sqrt
 
 /**
@@ -75,8 +78,17 @@ fun SettingsWindow(viewModel: DrawingViewModel, onDismiss: () -> Unit) {
             ) {
                 Text("Brush Settings", style = MaterialTheme.typography.titleMedium)
 
-                ColorPicker(onColorSelected = { viewModel.setBrushColor(it) }, viewModel.brushColor)
-
+                ColorPicker(onColorSelected = { viewModel.setBrushColor(it)
+                    print(viewModel.brushSize.toString())
+                }, viewModel.brushColor)
+                val brushSize = viewModel.brushSize
+                Slider(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = brushSize,
+                    onValueChange = { viewModel.setBrushSize(it)},
+                    valueRange = 1f..240f
+                )
+                Text(text = floor(viewModel.brushSize/12).toString())
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
@@ -98,7 +110,6 @@ fun SettingsWindow(viewModel: DrawingViewModel, onDismiss: () -> Unit) {
                                 .fillMaxSize()
                         )
                     }
-
                     //Circle
                     Button(onClick = {viewModel.brushShape = (DrawingViewModel.BrushShape.Circle)}, modifier = Modifier.size(64.dp)) {
                         Canvas(modifier = Modifier.fillMaxSize()) {
@@ -142,7 +153,6 @@ fun SettingsWindow(viewModel: DrawingViewModel, onDismiss: () -> Unit) {
                         )
                     }
                 }
-
                 // Close button
                 Button(onClick = { onDismiss() }, modifier = Modifier.align(Alignment.End)) {
                     Text("Close")

@@ -22,48 +22,43 @@ class DrawingViewModel : ViewModel() {
     enum class BrushShape {
         Square, Circle, Triangle
     }
-
     data class Stroke(
         val points: List<Offset>,
         val color: Color,
         val alpha: Float,
-        val shape: BrushShape
+        val shape: BrushShape,
+        val size: Float
     )
-
     var strokes by mutableStateOf(listOf<Stroke>())
         private set
     private var currentStroke: Stroke? = null
-
     var brushColor by mutableStateOf(Color.Blue)
         internal set
-
+    var brushSize by mutableFloatStateOf(12f)
+        internal set
     var showSettings by mutableStateOf(false)
         private set
-
-    // Default Brush
     var brushShape = BrushShape.Square
     fun setBrushColor(color: Color) {
         brushColor = color
     }
-
+    fun setBrushSize(size: Float) {
+        brushSize = size
+    }
     fun startStroke(offset: Offset) {
-        currentStroke = Stroke(points = listOf(offset), color = brushColor, alpha = brushColor.alpha, shape = brushShape)
+        currentStroke = Stroke(points = listOf(offset), color = brushColor, alpha = brushColor.alpha, shape = brushShape, size = brushSize)
         strokes = strokes + listOf(currentStroke!!)
     }
-
     fun addPointToStroke(offset: Offset) {
         currentStroke = currentStroke?.copy(points = currentStroke!!.points + offset)
         strokes = strokes.dropLast(1) + listOf(currentStroke!!)
     }
-
     fun endStroke() {
         currentStroke = null
     }
-
     fun toggleSettings() {
         showSettings = !showSettings
     }
-
     fun clearCanvas() {
         strokes = emptyList()
         currentStroke = null

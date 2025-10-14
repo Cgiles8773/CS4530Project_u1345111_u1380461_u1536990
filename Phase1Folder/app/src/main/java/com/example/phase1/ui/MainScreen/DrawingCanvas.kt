@@ -9,7 +9,6 @@
  * (circle, square, triangle).
  */
 
-
 package com.example.phase1.ui.MainScreen
 
 import androidx.compose.foundation.Canvas
@@ -25,7 +24,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.input.pointer.pointerInput
 import com.example.phase1.vm.DrawingViewModel
-
 
 // ------------------------------------------------------
 // Drawing Canvas Composable
@@ -66,17 +64,17 @@ fun DrawingCanvas(viewModel: DrawingViewModel) {
                     DrawingViewModel.BrushShape.Square -> drawRect(
                         color = stroke.color.copy(alpha = stroke.alpha),
                         topLeft = points[0] - Offset(6f, 6f),
-                        size = androidx.compose.ui.geometry.Size(12f, 12f)
+                        size = androidx.compose.ui.geometry.Size(stroke.size, stroke.size)
                     )
 
                     DrawingViewModel.BrushShape.Circle -> drawCircle(
                         color = stroke.color.copy(alpha = stroke.alpha),
-                        radius = 6f,
+                        radius = stroke.size/2,
                         center = points[0]
                     )
 
                     DrawingViewModel.BrushShape.Triangle -> {
-                        val halfSize = 6f
+                        val halfSize = stroke.size/2
                         val trianglePath = Path().apply {
                             moveTo(points[0].x, points[0].y - halfSize)
                             lineTo(points[0].x - halfSize, points[0].y + halfSize)
