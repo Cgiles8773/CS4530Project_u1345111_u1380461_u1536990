@@ -95,17 +95,17 @@ fun DrawingCanvas(viewModel: DrawingViewModel) {
                             color = stroke.color.copy(alpha = stroke.alpha),
                             start = points[i],
                             end = points[i + 1],
-                            strokeWidth = 12f
+                            strokeWidth = stroke.size
                         )
 
                         DrawingViewModel.BrushShape.Circle -> drawCircle(
                             color = stroke.color.copy(alpha = stroke.alpha),
-                            radius = 6f,
+                            radius = stroke.size/2,
                             center = points[i]
                         )
 
                         DrawingViewModel.BrushShape.Triangle -> {
-                            val halfSize = 6f
+                            val halfSize = stroke.size/2
                             val trianglePath = Path().apply {
                                 moveTo(points[i].x, points[i].y - halfSize)
                                 lineTo(points[i].x - halfSize, points[i].y + halfSize)

@@ -78,13 +78,12 @@ fun SettingsWindow(viewModel: DrawingViewModel, onDismiss: () -> Unit) {
             ) {
                 Text("Brush Settings", style = MaterialTheme.typography.titleMedium)
 
-                ColorPicker(onColorSelected = { viewModel.setBrushColor(it)
-                    print(viewModel.brushSize.toString())
-                }, viewModel.brushColor)
-                val brushSize = viewModel.brushSize
+                ColorPicker(onColorSelected = { viewModel.setBrushColor(it) },
+                viewModel.brushColor)
+                //val brushSize = viewModel.brushSize
                 Slider(
                     modifier = Modifier.fillMaxWidth(),
-                    value = brushSize,
+                    value = viewModel.brushSize,
                     onValueChange = { viewModel.setBrushSize(it)},
                     valueRange = 1f..240f
                 )
