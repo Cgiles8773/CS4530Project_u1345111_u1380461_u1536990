@@ -6,11 +6,13 @@
  */
 package com.example.phase1.vm
 
+import android.graphics.Bitmap
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 
@@ -28,6 +30,13 @@ class DrawingViewModel : ViewModel() {
         val alpha: Float,
         val shape: BrushShape,
         val size: Float
+    )
+    data class Image(
+        val id: Int,
+        val name: String,
+        val filepath: String,
+        val date: String,
+        val image: Bitmap
     )
     var strokes by mutableStateOf(listOf<Stroke>())
         private set
@@ -62,5 +71,17 @@ class DrawingViewModel : ViewModel() {
     fun clearCanvas() {
         strokes = emptyList()
         currentStroke = null
+    }
+    fun saveDrawing(width: Int, height: Int) //Idea: Save the current image to the database
+    {
+        // DATABASE: Id, Name, Filepath, Date
+        // SYSTEM: Bitmap/Image
+        val image = ImageHandler.saveStrokesToBitmap(strokes, width, height)
+
+    }
+    fun loadDrawing(id: Int) // Idea: Home screen passes an image ID to this function and
+    // the image is loaded into the DrawingCanvas
+    {
+        val image = ImageHandler.loadBitmapFromDatabase(id)
     }
 }
