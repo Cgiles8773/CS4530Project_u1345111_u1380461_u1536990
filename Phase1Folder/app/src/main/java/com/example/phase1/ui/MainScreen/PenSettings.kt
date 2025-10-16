@@ -38,9 +38,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.phase1.model.BrushShape
 import com.example.phase1.vm.DrawingViewModel
 import kotlin.math.floor
-import kotlin.math.log
 import kotlin.math.sqrt
 
 /**
@@ -93,7 +93,7 @@ fun SettingsWindow(viewModel: DrawingViewModel, onDismiss: () -> Unit) {
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     //Square
-                    Button(onClick = {viewModel.brushShape = (DrawingViewModel.BrushShape.Square)}, modifier = Modifier.size(64.dp)) {
+                    Button(onClick = {viewModel.brushShape = (BrushShape.Square)}, modifier = Modifier.size(64.dp)) {
                         Box(
                             modifier = Modifier
                                 .drawBehind {
@@ -110,13 +110,13 @@ fun SettingsWindow(viewModel: DrawingViewModel, onDismiss: () -> Unit) {
                         )
                     }
                     //Circle
-                    Button(onClick = {viewModel.brushShape = (DrawingViewModel.BrushShape.Circle)}, modifier = Modifier.size(64.dp)) {
+                    Button(onClick = {viewModel.brushShape = (BrushShape.Circle)}, modifier = Modifier.size(64.dp)) {
                         Canvas(modifier = Modifier.fillMaxSize()) {
                             drawCircle(color = Color.White, radius = size.minDimension)
                         }
                     }
                     //Triangle
-                    Button(onClick = {viewModel.brushShape = (DrawingViewModel.BrushShape.Triangle)}, modifier = Modifier.size(64.dp)) {
+                    Button(onClick = {viewModel.brushShape = (BrushShape.Triangle)}, modifier = Modifier.size(64.dp)) {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()

@@ -6,38 +6,28 @@
  */
 package com.example.phase1.vm
 
-import android.graphics.Bitmap
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.phase1.data.file.ImageHandler
+import com.example.phase1.data.repository.ImageRepository
+import com.example.phase1.model.BrushShape
+import com.example.phase1.model.Stroke
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-// ------------------------------------------------------
-// ViewModel (business + UI state)
-// ------------------------------------------------------
-class DrawingViewModel : ViewModel() {
-    // Helper classes
-    enum class BrushShape {
-        Square, Circle, Triangle
-    }
-    data class Stroke(
-        val points: List<Offset>,
-        val color: Color,
-        val alpha: Float,
-        val shape: BrushShape,
-        val size: Float
-    )
-    data class Image(
-        val id: Int,
-        val name: String,
-        val filepath: String,
-        val date: String,
-        val image: Bitmap
-    )
+@HiltViewModel
+class DrawingViewModel @Inject constructor(
+    private val imageRepository: ImageRepository,
+    private val imageHandler: ImageHandler
+) : ViewModel() {
+
     var strokes by mutableStateOf(listOf<Stroke>())
         private set
     private var currentStroke: Stroke? = null
@@ -48,40 +38,42 @@ class DrawingViewModel : ViewModel() {
     var showSettings by mutableStateOf(false)
         private set
     var brushShape = BrushShape.Square
+
     fun setBrushColor(color: Color) {
         brushColor = color
     }
+
     fun setBrushSize(size: Float) {
         brushSize = size
     }
+
     fun startStroke(offset: Offset) {
         currentStroke = Stroke(points = listOf(offset), color = brushColor, alpha = brushColor.alpha, shape = brushShape, size = brushSize)
         strokes = strokes + listOf(currentStroke!!)
     }
+
     fun addPointToStroke(offset: Offset) {
         currentStroke = currentStroke?.copy(points = currentStroke!!.points + offset)
         strokes = strokes.dropLast(1) + listOf(currentStroke!!)
     }
+
     fun endStroke() {
         currentStroke = null
     }
+
     fun toggleSettings() {
         showSettings = !showSettings
     }
+
     fun clearCanvas() {
         strokes = emptyList()
         currentStroke = null
     }
-    fun saveDrawing(width: Int, height: Int) //Idea: Save the current image to the database
-    {
-        // DATABASE: Id, Name, Filepath, Date
-        // SYSTEM: Bitmap/Image
-        val image = ImageHandler.saveStrokesToBitmap(strokes, width, height)
 
-    }
-    fun loadDrawing(id: Int) // Idea: Home screen passes an image ID to this function and
-    // the image is loaded into the DrawingCanvas
-    {
-        val image = ImageHandler.loadBitmapFromDatabase(id)
+    fun saveDrawing(name: String, width: Int, height: Int) {
+        viewModelScope.launch {
+            val bitmap = imageHandler.saveStrokesToBitmap(strokes, width, height)
+            imageRepository.saveImage(name, bitmap)
+        }
     }
 }

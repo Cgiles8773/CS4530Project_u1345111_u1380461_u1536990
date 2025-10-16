@@ -10,7 +10,7 @@
 package com.example.phase1.ui.Navigation
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -27,7 +27,7 @@ fun NavGraph(navController: NavHostController) {
         }
 
         composable("main") {
-            val viewModel: DrawingViewModel = viewModel()
+            val viewModel: DrawingViewModel = hiltViewModel()
             MainScreen(navController, viewModel)
         }
     }

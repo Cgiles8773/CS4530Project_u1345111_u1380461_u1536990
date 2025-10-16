@@ -9,12 +9,12 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asAndroidBitmap
-import com.example.phase1.viewmodel.DrawingViewModel.BrushShape
-import com.example.phase1.viewmodel.DrawingViewModel.Stroke
+import com.example.phase1.model.BrushShape
+import com.example.phase1.model.Stroke
 import java.io.File
 import java.io.FileOutputStream
 
-class ImageHandler(/*private val context: Context*/) {
+class ImageHandler(private val context: Context) {
     fun saveStrokesToBitmap(strokes: List<Stroke>, width: Int, height: Int): Bitmap {
         val bitmap = ImageBitmap(width, height)
         val canvas = Canvas(bitmap)
@@ -63,16 +63,20 @@ class ImageHandler(/*private val context: Context*/) {
         return bitmap.asAndroidBitmap()
     }
 
-    fun saveBitmapToFile(bitmap: Bitmap, filename: String): String {
-        /*
-        val dir = File(context.filesDir, "images")
-        if (!dir.exists()) dir.mkdirs()
-        val file = File(dir, "$filename.png")
-        FileOutputStream(file).use { out ->
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+    fun saveBitmapToFile(bitmap: Bitmap, name: String): String? {
+        try {
+            val dir = File(context.filesDir, "images")
+            if (!dir.exists()) dir.mkdirs()
+            val file = File(dir, "$name.png")
+            FileOutputStream(file).use { out ->
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+            }
+            return file.absolutePath
         }
-        return file.absolutePath
-         */
+        catch (exception: Exception)
+        {
+            return null
+        }
     }
 
     fun loadBitmapFromFile(filepath: String): Bitmap? = BitmapFactory.decodeFile(filepath)

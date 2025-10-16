@@ -5,22 +5,16 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ImageDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(imageRecord: ImageRecord)
-
-    @Update
-    suspend fun update(imageRecord: ImageRecord) //Unused
+    suspend fun insertImage(imageRecord: ImageRecord)
 
     @Delete
-    suspend fun delete(imageRecord: ImageRecord)
+    suspend fun deleteImage(imageRecord: ImageRecord)
 
-    @Query("SELECT * FROM images ORDER BY name ASC")
-    fun getAll(): Flow<List<ImageRecord>>
-    @Query("SELECT * FROM images WHERE id = :id")
-    fun get(id: Int): Flow<ImageRecord>
+    @Query("SELECT * FROM images")
+    fun getImages(): Flow<List<ImageRecord>>
 }

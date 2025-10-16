@@ -23,8 +23,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.input.pointer.pointerInput
+import com.example.phase1.model.BrushShape
 import com.example.phase1.vm.DrawingViewModel
-
 // ------------------------------------------------------
 // Drawing Canvas Composable
 // ------------------------------------------------------
@@ -61,19 +61,19 @@ fun DrawingCanvas(viewModel: DrawingViewModel) {
             if (points.size == 1) {
                 // Handle single-tap strokes
                 when (stroke.shape) {
-                    DrawingViewModel.BrushShape.Square -> drawRect(
+                    BrushShape.Square -> drawRect(
                         color = stroke.color.copy(alpha = stroke.alpha),
                         topLeft = points[0] - Offset(6f, 6f),
                         size = androidx.compose.ui.geometry.Size(stroke.size, stroke.size)
                     )
 
-                    DrawingViewModel.BrushShape.Circle -> drawCircle(
+                    BrushShape.Circle -> drawCircle(
                         color = stroke.color.copy(alpha = stroke.alpha),
                         radius = stroke.size/2,
                         center = points[0]
                     )
 
-                    DrawingViewModel.BrushShape.Triangle -> {
+                    BrushShape.Triangle -> {
                         val halfSize = stroke.size/2
                         val trianglePath = Path().apply {
                             moveTo(points[0].x, points[0].y - halfSize)
@@ -91,20 +91,20 @@ fun DrawingCanvas(viewModel: DrawingViewModel) {
                 // Handle normal multi-point strokes
                 for (i in 0 until points.size - 1) {
                     when (stroke.shape) {
-                        DrawingViewModel.BrushShape.Square -> drawLine(
+                        BrushShape.Square -> drawLine(
                             color = stroke.color.copy(alpha = stroke.alpha),
                             start = points[i],
                             end = points[i + 1],
                             strokeWidth = stroke.size
                         )
 
-                        DrawingViewModel.BrushShape.Circle -> drawCircle(
+                        BrushShape.Circle -> drawCircle(
                             color = stroke.color.copy(alpha = stroke.alpha),
                             radius = stroke.size/2,
                             center = points[i]
                         )
 
-                        DrawingViewModel.BrushShape.Triangle -> {
+                        BrushShape.Triangle -> {
                             val halfSize = stroke.size/2
                             val trianglePath = Path().apply {
                                 moveTo(points[i].x, points[i].y - halfSize)

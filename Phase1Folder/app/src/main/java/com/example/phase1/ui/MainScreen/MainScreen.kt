@@ -80,7 +80,7 @@ fun MainScreen(navController: NavController, viewModel: DrawingViewModel) {
                     DrawingCanvas(viewModel)
                 }
                 Button(onClick = { viewModel.clearCanvas() }) { Text("Clear") }
-                Button(onClick = { viewModel.saveDrawing(canvasSize.value.height, canvasSize.value.width)}) { Text("Save") }
+                Button(onClick = { viewModel.saveDrawing("placeholder", canvasSize.value.height, canvasSize.value.width)}) { Text("Save") }
                 if (viewModel.showSettings) {
                     SettingsWindow(
                         viewModel = viewModel,
