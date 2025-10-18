@@ -1,4 +1,4 @@
-package com.example.phase1.ui.mainscreen
+package com.example.phase1.ui.drawscreen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

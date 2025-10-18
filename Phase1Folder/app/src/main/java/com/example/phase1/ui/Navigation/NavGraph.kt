@@ -16,7 +16,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.phase1.ui.MainScreen.MainScreen
 import com.example.phase1.ui.SplashScreen.SplashScreen
+import com.example.phase1.ui.homescreen.HomeScreen
 import com.example.phase1.vm.DrawingViewModel
+import com.example.phase1.vm.HomeViewModel
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -29,6 +31,11 @@ fun NavGraph(navController: NavHostController) {
         composable("main") {
             val viewModel: DrawingViewModel = hiltViewModel()
             MainScreen(navController, viewModel)
+        }
+
+        composable("home") {
+            val viewModel: HomeViewModel = hiltViewModel()
+            HomeScreen(navController, viewModel)
         }
     }
 }

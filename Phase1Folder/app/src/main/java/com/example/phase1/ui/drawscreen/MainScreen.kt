@@ -29,12 +29,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.phase1.ui.mainscreen.SaveWindow
+import com.example.phase1.ui.drawscreen.SaveWindow
 import com.example.phase1.vm.DrawingViewModel
 
 
@@ -82,6 +81,7 @@ fun MainScreen(navController: NavController, viewModel: DrawingViewModel) {
                 }
                 Button(onClick = { viewModel.clearCanvas() }) { Text("Clear") }
                 Button(onClick = { viewModel.toggleSave()}) { Text("Save") }
+                Button(onClick = { navController.navigate("home") }) { Text("Go to Home Screen") }
                 // Button(onClick = { viewModel.saveDrawing("", canvasSize.value.height, canvasSize.value.width)}) { Text("Save") }
                 if (viewModel.showSettings) {
                     SettingsWindow(
