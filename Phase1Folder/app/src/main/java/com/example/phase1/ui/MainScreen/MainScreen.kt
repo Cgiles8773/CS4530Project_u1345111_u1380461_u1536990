@@ -34,6 +34,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.phase1.ui.mainscreen.SaveWindow
 import com.example.phase1.vm.DrawingViewModel
 
 
@@ -80,11 +81,19 @@ fun MainScreen(navController: NavController, viewModel: DrawingViewModel) {
                     DrawingCanvas(viewModel)
                 }
                 Button(onClick = { viewModel.clearCanvas() }) { Text("Clear") }
-                Button(onClick = { viewModel.saveDrawing("placeholder", canvasSize.value.height, canvasSize.value.width)}) { Text("Save") }
+                Button(onClick = { viewModel.toggleSave()}) { Text("Save") }
+                // Button(onClick = { viewModel.saveDrawing("", canvasSize.value.height, canvasSize.value.width)}) { Text("Save") }
                 if (viewModel.showSettings) {
                     SettingsWindow(
                         viewModel = viewModel,
                         onDismiss = { viewModel.toggleSettings() }
+                    )
+                }
+                if(viewModel.showSave) {
+                    SaveWindow(
+                        viewModel = viewModel,
+                        onDismiss = { viewModel.toggleSave() },
+                        canvasSize = canvasSize.value.height
                     )
                 }
             }

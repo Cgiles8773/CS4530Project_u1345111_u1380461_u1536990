@@ -37,6 +37,8 @@ class DrawingViewModel @Inject constructor(
         internal set
     var showSettings by mutableStateOf(false)
         private set
+    var showSave by mutableStateOf(false)
+        private set
     var brushShape = BrushShape.Square
 
     fun setBrushColor(color: Color) {
@@ -68,6 +70,11 @@ class DrawingViewModel @Inject constructor(
     fun clearCanvas() {
         strokes = emptyList()
         currentStroke = null
+    }
+
+    fun toggleSave()
+    {
+        showSave = !showSave
     }
 
     fun saveDrawing(name: String, width: Int, height: Int) {

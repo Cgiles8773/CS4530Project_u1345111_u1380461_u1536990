@@ -65,6 +65,8 @@ class ImageHandler(private val context: Context) {
 
     fun saveBitmapToFile(bitmap: Bitmap, name: String): String? {
         try {
+            // Directory inside app's internal storage:
+            //  /data/data/com.example.phase1.data.file/files/images
             val dir = File(context.filesDir, "images")
             if (!dir.exists()) dir.mkdirs()
             val file = File(dir, "$name.png")
