@@ -9,4 +9,5 @@ interface ImageRepository {
     suspend fun saveImage(name: String, bitmap: Bitmap) : Boolean
     suspend fun deleteImage(imageRecord: ImageRecord)
     fun loadBitmap(image: ImageRecord): Bitmap?
+    fun loadBitmap(filepath: String): Bitmap?
 }

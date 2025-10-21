@@ -6,6 +6,7 @@
  */
 package com.example.phase1.vm
 
+import android.graphics.Bitmap
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +32,8 @@ class DrawingViewModel @Inject constructor(
     var strokes by mutableStateOf(listOf<Stroke>())
         private set
     private var currentStroke: Stroke? = null
+    var background by mutableStateOf<Bitmap?>(null)
+        private set
     var brushColor by mutableStateOf(Color.Blue)
         internal set
     var brushSize by mutableFloatStateOf(12f)
@@ -77,9 +80,21 @@ class DrawingViewModel @Inject constructor(
         showSave = !showSave
     }
 
-    fun saveDrawing(name: String, width: Int, height: Int) {
+    fun loadDrawing(filepath: String?)
+    {
+        if(filepath != null)
+        {
+            viewModelScope.launch {
+                background = imageRepository.loadBitmap(filepath)
+            }
+        }
+    }
+    fun getBitmap() : Bitmap? {
+        return background
+    }
+    fun saveDrawing(background: Bitmap?, name: String, width: Int, height: Int) {
         viewModelScope.launch {
-            val bitmap = imageHandler.saveStrokesToBitmap(strokes, width, height)
+            val bitmap = imageHandler.saveStrokesToBitmap(background, strokes, width, height)
             imageRepository.saveImage(name, bitmap)
         }
     }

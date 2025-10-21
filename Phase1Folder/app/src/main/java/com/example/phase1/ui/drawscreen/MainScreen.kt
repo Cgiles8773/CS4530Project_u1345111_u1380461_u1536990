@@ -51,7 +51,7 @@ import com.example.phase1.vm.DrawingViewModel
 // Main Screen Composable (View layer)
 // ------------------------------------------------------
 @Composable
-fun MainScreen(navController: NavController, viewModel: DrawingViewModel) {
+fun MainScreen(navController: NavController, viewModel: DrawingViewModel, filepath: String?) {
     val canvasSize = remember { mutableStateOf(IntSize.Zero) }
     Scaffold(
         floatingActionButton = {

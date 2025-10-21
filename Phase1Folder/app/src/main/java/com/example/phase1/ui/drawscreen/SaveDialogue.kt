@@ -81,7 +81,7 @@ fun SaveWindow(
 
                     Button(
                         onClick = {
-                            viewModel.saveDrawing(imageName, canvasSize, canvasSize)
+                            viewModel.saveDrawing(viewModel.getBitmap(), imageName, canvasSize, canvasSize)
                             onDismiss()
                         },
                         enabled = isNameValid

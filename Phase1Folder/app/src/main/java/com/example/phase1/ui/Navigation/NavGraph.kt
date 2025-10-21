@@ -12,13 +12,17 @@ package com.example.phase1.ui.Navigation
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.phase1.ui.MainScreen.MainScreen
 import com.example.phase1.ui.SplashScreen.SplashScreen
 import com.example.phase1.ui.homescreen.HomeScreen
 import com.example.phase1.vm.DrawingViewModel
 import com.example.phase1.vm.HomeViewModel
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -28,9 +32,25 @@ fun NavGraph(navController: NavHostController) {
             SplashScreen(navController)
         }
 
+        composable(
+            route = "main/{filePath}",
+            arguments = listOf(
+                navArgument("filePath") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val viewModel: DrawingViewModel = hiltViewModel()
+
+            // Decode the filePath (since it may contain slashes)
+            val decodedPath = backStackEntry.arguments?.getString("filePath")?.let {
+                URLDecoder.decode(it, StandardCharsets.UTF_8.toString())
+            }
+            viewModel.loadDrawing(decodedPath)
+            MainScreen(navController, viewModel, decodedPath)
+        }
+
         composable("main") {
             val viewModel: DrawingViewModel = hiltViewModel()
-            MainScreen(navController, viewModel)
+            MainScreen(navController, viewModel, null)
         }
 
         composable("home") {

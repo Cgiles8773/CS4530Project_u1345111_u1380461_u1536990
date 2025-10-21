@@ -36,4 +36,8 @@ class ImageRepositoryImpl @Inject constructor(
     override fun loadBitmap(image: ImageRecord): Bitmap? {
         return imageHandler.loadBitmapFromFile(image.filePath)
     }
+
+    override fun loadBitmap(filepath: String): Bitmap? {
+        return imageHandler.loadBitmapFromFile(filepath)
+    }
 }
