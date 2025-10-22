@@ -28,7 +28,7 @@ fun SplashScreen(navController: NavController) {
     // Trigger navigation after 1 second
     LaunchedEffect(Unit) {
         kotlinx.coroutines.delay(1000) // 1 second
-        navController.navigate("main") {
+        navController.navigate("home") {
             popUpTo("splash") { inclusive = true } // remove splash from back stack
         }
     }

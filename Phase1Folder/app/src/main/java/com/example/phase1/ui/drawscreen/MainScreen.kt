@@ -25,6 +25,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -85,7 +86,7 @@ fun MainScreen(navController: NavController, viewModel: DrawingViewModel, filepa
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceEvenly)
                 {
                     Button(onClick = { viewModel.toggleSave() }) { Text("Save") }
-                    Button(onClick = { navController.navigate("home") }) { Text("Load") }
+                    Button(onClick = { navController.navigate("home") }) { Text("Home") }
                     Button(onClick = { viewModel.clearCanvas() }) { Text("Clear") }
                 }
 //                Button(onClick = { viewModel.clearCanvas() }) { Text("Clear") }
@@ -106,6 +107,7 @@ fun MainScreen(navController: NavController, viewModel: DrawingViewModel, filepa
                     )
                 }
             }
+
         }
     }
 }

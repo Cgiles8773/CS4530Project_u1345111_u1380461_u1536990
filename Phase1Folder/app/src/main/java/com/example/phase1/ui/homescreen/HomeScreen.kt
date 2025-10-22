@@ -1,6 +1,8 @@
 package com.example.phase1.ui.homescreen
 
 import android.graphics.Bitmap
+import android.net.Uri
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -8,9 +10,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +41,13 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
         }
     }
 
+    // Holds the visible state of drawing options
+    var showDrawingOptions by remember { mutableStateOf(false)}
+
+    if (showDrawingOptions) {
+        drawingOptionsDialog(navController, imagePickerLauncher, { showDrawingOptions = false})
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -53,7 +64,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
                 Card(modifier = Modifier.width(220.dp).height(220.dp).padding(vertical = 4.dp))
                 {
                     Button(
-                        onClick = { navController.navigate("main") },
+                        onClick = { showDrawingOptions = true },
                         modifier = Modifier.align(Alignment.CenterHorizontally).width(210.dp).height(210.dp),
                         shape = RoundedCornerShape(8.dp)
                     ) {
@@ -119,4 +130,34 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
             }
         }
     }
+}
+
+/**
+ * This function provides the UI popup for the user to choose the drawing type
+ * Takes in a lambda to handle the closing of dialog
+ */
+@Composable
+fun drawingOptionsDialog(navController: NavController, imagePickerLauncher : ManagedActivityResultLauncher<String, Uri?>, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Choose drawing option")},
+        text = {
+
+            // Display the 2 options, new drawing, or open an image
+            Column {
+                TextButton(
+                    onClick = { navController.navigate("main") },
+                    ) { Text("New Drawing")}
+
+
+                TextButton(
+                    onClick = { imagePickerLauncher.launch("image/*") },
+                ) { Text("Import Image")}
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel")}
+        },
+        confirmButton = {}
+    )
 }
