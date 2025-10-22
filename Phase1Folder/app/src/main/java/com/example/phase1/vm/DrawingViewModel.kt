@@ -73,6 +73,7 @@ class DrawingViewModel @Inject constructor(
     fun clearCanvas() {
         strokes = emptyList()
         currentStroke = null
+        background = null
     }
 
     fun toggleSave()

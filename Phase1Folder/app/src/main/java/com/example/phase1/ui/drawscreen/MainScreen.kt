@@ -13,8 +13,10 @@ package com.example.phase1.ui.MainScreen
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -76,13 +78,20 @@ fun MainScreen(navController: NavController, viewModel: DrawingViewModel, filepa
                         .fillMaxSize(0.95f)
                         .border(5.dp, Color.Black)
                         .onGloballyPositioned{coordinates -> canvasSize.value = coordinates.size }
+                        .padding(3.dp)
                 ) {
                     DrawingCanvas(viewModel)
                 }
-                Button(onClick = { viewModel.clearCanvas() }) { Text("Clear") }
-                Button(onClick = { viewModel.toggleSave()}) { Text("Save") }
-                Button(onClick = { navController.navigate("home") }) { Text("Go to Home Screen") }
-                // Button(onClick = { viewModel.saveDrawing("", canvasSize.value.height, canvasSize.value.width)}) { Text("Save") }
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceEvenly)
+                {
+                    Button(onClick = { viewModel.toggleSave() }) { Text("Save") }
+                    Button(onClick = { navController.navigate("home") }) { Text("Load") }
+                    Button(onClick = { viewModel.clearCanvas() }) { Text("Clear") }
+                }
+//                Button(onClick = { viewModel.clearCanvas() }) { Text("Clear") }
+//                Button(onClick = { viewModel.toggleSave()}) { Text("Save") }
+//                Button(onClick = { navController.navigate("home") }) { Text("Go to Home Screen") }
+                // TODO: Refactor into a box with three buttons
                 if (viewModel.showSettings) {
                     SettingsWindow(
                         viewModel = viewModel,

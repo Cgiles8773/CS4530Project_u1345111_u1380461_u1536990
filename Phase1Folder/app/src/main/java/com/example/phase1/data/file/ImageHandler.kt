@@ -7,6 +7,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
+import android.net.Uri
 import androidx.compose.ui.graphics.toArgb
 import com.example.phase1.model.BrushShape
 import com.example.phase1.model.Stroke
@@ -14,6 +15,7 @@ import java.io.File
 import java.io.FileOutputStream
 import androidx.core.graphics.scale
 import androidx.core.graphics.createBitmap
+import androidx.core.net.toUri
 
 class ImageHandler(private val context: Context) {
 
@@ -114,8 +116,22 @@ class ImageHandler(private val context: Context) {
         }
     }
 
-    fun loadBitmapFromFile(filepath: String): Bitmap? =
-        BitmapFactory.decodeFile(filepath)
+    fun loadBitmapFromFile(filepath: String): Bitmap? {
+        return try {
+            if (filepath.startsWith("content://")) {
+                // Load from content provider
+                context.contentResolver.openInputStream(filepath.toUri()).use { input ->
+                    BitmapFactory.decodeStream(input)
+                }
+            } else {
+                // Load from filesystem path
+                BitmapFactory.decodeFile(filepath)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
 
     fun deleteBitmapFile(filepath: String) {
         val file = File(filepath)

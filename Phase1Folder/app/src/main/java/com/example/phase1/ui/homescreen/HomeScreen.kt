@@ -1,10 +1,13 @@
 package com.example.phase1.ui.homescreen
 
 import android.graphics.Bitmap
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -24,17 +27,52 @@ import java.nio.charset.StandardCharsets
 fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
     val allImageRecords by viewModel.images.collectAsStateWithLifecycle()
 
+    // Launcher for file picker
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null) {
+            val encodedUri = URLEncoder.encode(uri.toString(), StandardCharsets.UTF_8.toString())
+            navController.navigate("main/$encodedUri")
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        Spacer(modifier = Modifier.height(32.dp))
         LazyRow(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            item {
+                Card(modifier = Modifier.width(220.dp).height(220.dp).padding(vertical = 4.dp))
+                {
+                    Button(
+                        onClick = { navController.navigate("main") },
+                        modifier = Modifier.align(Alignment.CenterHorizontally).width(210.dp).height(210.dp),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("New Drawing")
+                    }
+                }
+            }
+            item {
+                Card(modifier = Modifier.width(220.dp).height(220.dp).padding(vertical = 4.dp))
+                {
+                    Button(
+                        onClick = { imagePickerLauncher.launch("image/*") },
+                        modifier = Modifier.align(Alignment.CenterHorizontally).width(210.dp).height(210.dp),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("Import Drawing")
+                    }
+                }
+            }
             items(allImageRecords) { imgRecord ->
                 Card(
                     modifier = Modifier
@@ -67,7 +105,6 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
 
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(text = imgRecord.name)
-                        Text(text = imgRecord.date.toString())
 
                         Spacer(modifier = Modifier.height(8.dp))
                         Button(onClick = {
@@ -80,15 +117,6 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
                     }
                 }
             }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = { navController.navigate("main") },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            Text("New Drawing")
         }
     }
 }
