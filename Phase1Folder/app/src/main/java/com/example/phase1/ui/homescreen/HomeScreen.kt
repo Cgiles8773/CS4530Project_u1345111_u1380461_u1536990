@@ -7,6 +7,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -29,6 +32,12 @@ import java.nio.charset.StandardCharsets
 
 @Composable
 fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
+
+    // Screen configuration
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp
+    val screenHeight = configuration.screenHeightDp
+
     val allImageRecords by viewModel.images.collectAsStateWithLifecycle()
 
     // Launcher for file picker
@@ -51,43 +60,37 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(32.dp))
-        LazyRow(
+
+        val itemWidth = screenWidth - 24
+
+        // TODO: Add LazyRow when landscape mode
+        LazyColumn(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
-                Card(modifier = Modifier.width(220.dp).height(220.dp).padding(vertical = 4.dp))
+                Card(modifier = Modifier.width(itemWidth.dp).height(260.dp).padding(vertical = 4.dp))
                 {
                     Button(
                         onClick = { showDrawingOptions = true },
-                        modifier = Modifier.align(Alignment.CenterHorizontally).width(210.dp).height(210.dp),
+                        modifier = Modifier.align(Alignment.CenterHorizontally).width((itemWidth - 10).dp).height(250.dp),
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Text("New Drawing")
                     }
                 }
             }
-            item {
-                Card(modifier = Modifier.width(220.dp).height(220.dp).padding(vertical = 4.dp))
-                {
-                    Button(
-                        onClick = { imagePickerLauncher.launch("image/*") },
-                        modifier = Modifier.align(Alignment.CenterHorizontally).width(210.dp).height(210.dp),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text("Import Drawing")
-                    }
-                }
-            }
+
             items(allImageRecords) { imgRecord ->
                 Card(
                     modifier = Modifier
-                        .width(220.dp)
+                        .width(itemWidth.dp)
                         .height(260.dp)
                         .padding(vertical = 4.dp)
                 ) {
