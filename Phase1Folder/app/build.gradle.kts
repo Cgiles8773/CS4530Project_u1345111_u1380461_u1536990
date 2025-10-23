@@ -69,4 +69,24 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    // Unit testing
+    testImplementation("junit:junit:4.13.2")
+// Mockito
+    testImplementation("org.mockito:mockito-core:5.12.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
+    // ✅ AndroidX test utilities (for ApplicationProvider, etc.)
+    testImplementation("androidx.test:core:1.5.0")
+    testImplementation("androidx.test.ext:junit:1.1.5")
+
+// ✅ Coroutines test (for runTest)
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
+
+// ✅ Room in-memory DB testing
+    testImplementation("androidx.room:room-testing:2.6.1")
+
+// ✅ Lifecycle + LiveData testing utilities
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+
+
+
 }
