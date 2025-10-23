@@ -1,7 +1,10 @@
 package com.example.phase1.ui.homescreen
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,10 +26,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.phase1.vm.HomeViewModel
+import java.io.File
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -38,6 +44,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
     val screenWidth = configuration.screenWidthDp
     val screenHeight = configuration.screenHeightDp
 
+    val context = LocalContext.current
     val allImageRecords by viewModel.images.collectAsStateWithLifecycle()
 
     // Launcher for file picker
@@ -45,6 +52,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         if (uri != null) {
+
             val encodedUri = URLEncoder.encode(uri.toString(), StandardCharsets.UTF_8.toString())
             navController.navigate("main/$encodedUri")
         }
@@ -121,13 +129,27 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
                         Text(text = imgRecord.name)
 
                         Spacer(modifier = Modifier.height(8.dp))
-                        Button(onClick = {
-                            // Navigate to MainScreen, with file path as argument
-                            val encodedPath = URLEncoder.encode(imgRecord.filePath, StandardCharsets.UTF_8.toString())
-                            navController.navigate("main/${encodedPath}")
-                        }) {
-                            Text("Open")
+                        Row {
+
+                            // Open
+                            Button(onClick = {
+                                // Navigate to MainScreen, with file path as argument
+                                val encodedPath = URLEncoder.encode(imgRecord.filePath, StandardCharsets.UTF_8.toString())
+                                navController.navigate("main/${encodedPath}")
+                            }) {
+                                Text("Open")
+                            }
+
+                            // Share
+                            Button(onClick = {
+
+                                Log.d("ShareDebug", "Path: ${imgRecord.filePath}")
+                                shareImage(context, imgRecord.filePath)
+                            }) {
+                                Text("Share")
+                            }
                         }
+
                     }
                 }
             }
@@ -162,5 +184,30 @@ fun drawingOptionsDialog(navController: NavController, imagePickerLauncher : Man
             TextButton(onClick = onDismiss) { Text("Cancel")}
         },
         confirmButton = {}
+    )
+}
+
+/**
+ * This function provides sharing capabilities for each image
+ */
+fun shareImage(context: Context, imagePath: String) {
+    val file = File(imagePath)
+    if (!file.exists()) return
+
+    // Use FileProvider to get a content URI
+    val uri = FileProvider.getUriForFile(
+        context,
+        "${context.packageName}.provider",
+        file
+    )
+
+    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+        type = "image/*"
+        putExtra(Intent.EXTRA_STREAM, uri)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+
+    context.startActivity(
+        Intent.createChooser(shareIntent, "Share Image")
     )
 }
