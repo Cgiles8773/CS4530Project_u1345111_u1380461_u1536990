@@ -201,13 +201,22 @@ fun shareImage(context: Context, imagePath: String) {
         file
     )
 
+    Log.d("ShareDebug", "URI: ${uri}")
+
     val shareIntent = Intent(Intent.ACTION_SEND).apply {
         type = "image/*"
         putExtra(Intent.EXTRA_STREAM, uri)
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
 
-    context.startActivity(
-        Intent.createChooser(shareIntent, "Share Image")
-    )
+    val chooser = Intent.createChooser(shareIntent, "Share Image")
+    val resInfoList = context.packageManager.queryIntentActivities(chooser, 0)
+    for (resolveInfo in resInfoList) {
+        context.grantUriPermission(
+            resolveInfo.activityInfo.packageName,
+            uri,
+            Intent.FLAG_GRANT_READ_URI_PERMISSION
+        )
+    }
+    context.startActivity(chooser)
 }

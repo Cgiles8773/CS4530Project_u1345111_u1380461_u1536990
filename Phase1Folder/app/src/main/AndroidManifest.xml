@@ -14,7 +14,7 @@
         android:theme="@style/Theme.Phase1">
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.provider"
+            android:authorities="com.example.phase1.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
