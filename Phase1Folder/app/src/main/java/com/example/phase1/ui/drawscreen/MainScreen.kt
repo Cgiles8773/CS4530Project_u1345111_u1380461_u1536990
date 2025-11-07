@@ -15,18 +15,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,13 +28,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.phase1.ui.drawscreen.SaveWindow
 import com.example.phase1.vm.DrawingViewModel
+import android.content.res.Configuration
+import android.util.Log
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalDensity
 
 /**
  * Eric Nguyen, Jacob Nguyen, Collin Giles
@@ -59,12 +63,111 @@ import com.example.phase1.vm.DrawingViewModel
 @Composable
 fun MainScreen(navController: NavController, viewModel: DrawingViewModel, filepath: String?) {
     val canvasSize = remember { mutableStateOf(IntSize.Zero) }
+    val configuration = LocalConfiguration.current
+    val orientation = configuration.orientation
+
+    LaunchedEffect(orientation) {
+        Modifier.onGloballyPositioned { coordinates ->
+            Log.d(
+                "Orientation",
+                if (orientation == Configuration.ORIENTATION_PORTRAIT) "Portrait" else "Landscape"
+            )
+        }
+    }
+
     Scaffold(
         bottomBar = {
-            BottomAppBar (
-                actions =
+            when(configuration.orientation) { Configuration.ORIENTATION_PORTRAIT -> {
+                BottomAppBar (
+                    actions =
+                        {
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly)
+                            {
+                                Button(
+                                    onClick = { viewModel.toggleSave() }) { Text("Save") }
+                                Button(
+                                    onClick = { navController.navigate("home") }) { Text("Home") }
+                                Button(
+                                    onClick = { viewModel.clearCanvas() }) { Text("Clear") }
+                                Button(
+                                    onClick = { viewModel.toggleSettings() }) { Text("Settings") }
+                            }
+                        }
+                )
+            }
+            }
+        }
+    ) { innerPadding ->
+        when(configuration.orientation) { Configuration.ORIENTATION_PORTRAIT ->
+        {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally)
+                {
+                    Box(
+                        modifier = Modifier
+                            //TODO
+                            .fillMaxWidth(.90f)
+                            .fillMaxHeight()
+                            .border(5.dp, Color.Black)
+                            .onGloballyPositioned{coordinates -> canvasSize.value = coordinates.size }
+                            .padding(3.dp)
+                            .onGloballyPositioned { coordinates ->
+                                val size = coordinates.size
+                                Log.d("CanvasSize", "Width: ${size.width}, Height: ${size.height}")
+                            }
+                    ) {
+                        DrawingCanvas(viewModel)
+                    }
+                    if (viewModel.showSettings) {
+                        SettingsWindow(
+                            viewModel = viewModel,
+                            onDismiss = { viewModel.toggleSettings() }
+                        )
+                    }
+                    if(viewModel.showSave) {
+                        SaveWindow(
+                            viewModel = viewModel,
+                            onDismiss = { viewModel.toggleSave() },
+                            canvasSize = canvasSize.value.height
+                        )
+                    }
+                }
+
+            }
+        }
+            Configuration.ORIENTATION_LANDSCAPE ->
+            {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    contentAlignment = Alignment.Center
+                )
+                {
+                    Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically)
                     {
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly)
+                        Box(
+                            modifier = Modifier
+                                //TODO
+                                .fillMaxWidth(.88f)
+                                .fillMaxHeight()
+                                .border(5.dp, Color.Black)
+                                .onGloballyPositioned{coordinates -> canvasSize.value = coordinates.size }
+                                .padding(3.dp)
+                                .onGloballyPositioned { coordinates ->
+                                    val size = coordinates.size
+                                    Log.d("CanvasSize", "Width: ${size.width}, Height: ${size.height}")
+                                }
+                        ) {
+                            DrawingCanvas(viewModel)
+                        }
+                        ////////////////////////////////////////////////
+                        Column(modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.SpaceEvenly, horizontalAlignment = Alignment.CenterHorizontally)
                         {
                             Button(
                                 onClick = { viewModel.toggleSave() }) { Text("Save") }
@@ -75,51 +178,23 @@ fun MainScreen(navController: NavController, viewModel: DrawingViewModel, filepa
                             Button(
                                 onClick = { viewModel.toggleSettings() }) { Text("Settings") }
                         }
+                        ////////////////////////////////////////////////
+                        if (viewModel.showSettings) {
+                            SettingsWindow(
+                                viewModel = viewModel,
+                                onDismiss = { viewModel.toggleSettings() }
+                            )
+                        }
+                        if(viewModel.showSave) {
+                            SaveWindow(
+                                viewModel = viewModel,
+                                onDismiss = { viewModel.toggleSave() },
+                                canvasSize = canvasSize.value.height
+                            )
+                        }
                     }
-            )
-        }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally)
-            {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(0.95f)
-                        .border(5.dp, Color.Black)
-                        .onGloballyPositioned{coordinates -> canvasSize.value = coordinates.size }
-                        .padding(3.dp)
-                ) {
-                    DrawingCanvas(viewModel)
-                }
-                /*Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceEvenly)
-                {
-                    // TODO: Refactor into a box with three buttons
-                    Button(onClick = { viewModel.toggleSave() }) { Text("Save") }
-                    Button(onClick = { navController.navigate("home") }) { Text("Home") }
-                    Button(onClick = { viewModel.clearCanvas() }) { Text("Clear") }
-                    Button(onClick = {viewModel.toggleSettings() }) { Text("Settings")}
-                }
-                 */
-                if (viewModel.showSettings) {
-                    SettingsWindow(
-                        viewModel = viewModel,
-                        onDismiss = { viewModel.toggleSettings() }
-                    )
-                }
-                if(viewModel.showSave) {
-                    SaveWindow(
-                        viewModel = viewModel,
-                        onDismiss = { viewModel.toggleSave() },
-                        canvasSize = canvasSize.value.height
-                    )
                 }
             }
-
         }
     }
 }
