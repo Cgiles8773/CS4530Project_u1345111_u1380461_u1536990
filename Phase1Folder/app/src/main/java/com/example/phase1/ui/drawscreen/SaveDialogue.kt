@@ -38,7 +38,7 @@ fun SaveWindow(
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
-                .fillMaxWidth(0.9f)
+                .fillMaxWidth()
                 .wrapContentHeight()
                 .padding(16.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),

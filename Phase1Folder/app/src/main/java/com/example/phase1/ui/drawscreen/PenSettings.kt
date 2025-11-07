@@ -11,6 +11,8 @@
 package com.example.phase1.ui.MainScreen
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -42,6 +45,7 @@ import com.example.phase1.model.BrushShape
 import com.example.phase1.vm.DrawingViewModel
 import kotlin.math.floor
 import kotlin.math.sqrt
+import com.example.phase1.ui.theme.Purple40
 
 /**
  * Eric Nguyen, Jacob Nguyen, Collin Giles
@@ -63,7 +67,7 @@ fun SettingsWindow(viewModel: DrawingViewModel, onDismiss: () -> Unit) {
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
-                .fillMaxWidth(0.9f)
+                .fillMaxWidth()
                 .wrapContentHeight()
                 .padding(16.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
@@ -85,7 +89,8 @@ fun SettingsWindow(viewModel: DrawingViewModel, onDismiss: () -> Unit) {
                     modifier = Modifier.fillMaxWidth(),
                     value = viewModel.brushSize,
                     onValueChange = { viewModel.setBrushSize(it)},
-                    valueRange = 1f..240f
+                    valueRange = 1f..240f,
+                    thumb = { Box(Modifier.size(24.dp).background(color = Purple40, shape = CircleShape), contentAlignment = Alignment.Center) { } }
                 )
                 Text(text = floor(viewModel.brushSize/12).toString())
                 Row(
