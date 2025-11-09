@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.androidx.room.common.jvm)
     implementation("com.google.dagger:hilt-android:2.51.1")
     implementation(libs.androidx.room.ktx)
+    implementation(libs.ui)
     kapt("com.google.dagger:hilt-compiler:2.51.1")
     kapt("androidx.room:room-compiler:2.8.2")
     testImplementation(libs.junit)

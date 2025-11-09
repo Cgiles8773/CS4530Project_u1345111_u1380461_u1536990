@@ -42,7 +42,7 @@ fun ColorPicker(onColorSelected: (Color) -> Unit, initialColor: Color) {
         AlphaTile(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(60.dp)
+                .height(40.dp)
                 .clip(RoundedCornerShape(6.dp)),
             controller = controller
         )

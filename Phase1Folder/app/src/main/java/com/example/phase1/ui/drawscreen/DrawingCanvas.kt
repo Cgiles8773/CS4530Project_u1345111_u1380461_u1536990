@@ -11,7 +11,6 @@
 
 package com.example.phase1.ui.MainScreen
 
-import android.graphics.Bitmap
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -26,9 +25,9 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntSize
-import androidx.core.graphics.drawable.toDrawable
 import com.example.phase1.model.BrushShape
 import com.example.phase1.vm.DrawingViewModel
+
 // ------------------------------------------------------
 // Drawing Canvas Composable
 // ------------------------------------------------------
