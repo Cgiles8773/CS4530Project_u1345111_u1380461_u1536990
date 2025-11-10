@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
@@ -147,15 +148,16 @@ fun MainScreen(navController: NavController, viewModel: DrawingViewModel, filepa
                             DrawingCanvas(viewModel)
                         }
                         ////////////////////////////////////////////////
-                        Column(modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.SpaceEvenly, horizontalAlignment = Alignment.CenterHorizontally)
+                        Column(modifier = Modifier.fillMaxHeight().padding(start = 4.dp), verticalArrangement = Arrangement.SpaceEvenly, horizontalAlignment = Alignment.CenterHorizontally)
                         {
-                            Button(
+                            val buttonWidth = 100.dp
+                            Button(modifier = Modifier.width(buttonWidth),
                                 onClick = { viewModel.toggleSave() }) { Text("Save") }
-                            Button(
+                            Button(modifier = Modifier.width(buttonWidth),
                                 onClick = { navController.navigate("home") }) { Text("Home") }
-                            Button(
+                            Button(modifier = Modifier.width(buttonWidth),
                                 onClick = { viewModel.clearCanvas() }) { Text("Clear") }
-                            Button(
+                            Button(modifier = Modifier.width(buttonWidth),
                                 onClick = { viewModel.toggleSettings() }) { Text("Settings") }
                         }
                         ////////////////////////////////////////////////

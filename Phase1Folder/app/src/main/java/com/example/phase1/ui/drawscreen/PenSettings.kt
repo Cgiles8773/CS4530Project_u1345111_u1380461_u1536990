@@ -30,6 +30,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderColors
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -105,7 +107,10 @@ fun SettingsWindow(viewModel: DrawingViewModel, onDismiss: () -> Unit) {
                                         .background(color = Purple40, shape = CircleShape),
                                     contentAlignment = Alignment.Center
                                 ) { }
-                            }
+                            },
+                            colors = SliderDefaults.colors(
+                                inactiveTrackColor = Color.White
+                            )
                         )
                         Text(text = floor(viewModel.brushSize / 12).toString())
                         Row(
@@ -203,18 +208,19 @@ fun SettingsWindow(viewModel: DrawingViewModel, onDismiss: () -> Unit) {
                         .wrapContentHeight()
                         .padding(16.dp),
                     shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White)
                 ) {
                     Row(modifier = Modifier.fillMaxWidth())
                     {
-                        Box(modifier = Modifier.fillMaxWidth(0.5f).background(Color.White))
+                        Box(modifier = Modifier.fillMaxWidth(0.5f).background(Color.LightGray))
                         {
                             ColorPicker(
                                 onColorSelected = { viewModel.setBrushColor(it) },
                                 viewModel.brushColor
                             )
                         }
-                        Column(horizontalAlignment = Alignment.CenterHorizontally)
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(vertical = 30.dp))
                         {
                             Slider(
                                 modifier = Modifier.fillMaxWidth(),
@@ -228,7 +234,7 @@ fun SettingsWindow(viewModel: DrawingViewModel, onDismiss: () -> Unit) {
                                             .background(color = Purple40, shape = CircleShape),
                                         contentAlignment = Alignment.Center
                                     ) { }
-                                }
+                                },
                             )
                             Text(text = floor(viewModel.brushSize / 12).toString())
                             Row(
