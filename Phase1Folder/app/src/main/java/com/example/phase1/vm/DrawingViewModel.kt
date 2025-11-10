@@ -6,6 +6,7 @@
  */
 package com.example.phase1.vm
 
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -13,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.phase1.data.file.ImageHandler
@@ -43,6 +45,44 @@ class DrawingViewModel @Inject constructor(
     var showSave by mutableStateOf(false)
         private set
     var brushShape = BrushShape.Square
+
+    private var orientation by mutableStateOf(Configuration.ORIENTATION_PORTRAIT)
+    private var canvasSize by mutableStateOf(IntSize.Zero)
+
+    fun onOrientationChanged(newOrientation: Int, newCanvasSize: IntSize) {
+        if (newOrientation == orientation || newCanvasSize == IntSize.Zero || canvasSize == IntSize.Zero) {
+            this.orientation = newOrientation
+            this.canvasSize = newCanvasSize
+            return
+        }
+
+        val wasPortrait = canvasSize.width < canvasSize.height
+        val isNowLandscape = newCanvasSize.width > newCanvasSize.height
+
+        // Only run transformation if there was a meaningful orientation change
+        if (wasPortrait == isNowLandscape) {
+            this.orientation = newOrientation
+            this.canvasSize = newCanvasSize
+            return
+        }
+
+        val oldCanvasSize = canvasSize
+
+        val transformedStrokes = strokes.map { stroke ->
+            val transformedPoints = stroke.points.map { point ->
+                if (wasPortrait && isNowLandscape) { // Portrait -> Landscape
+                    Offset(x = point.y, y = oldCanvasSize.width - point.x)
+                } else { // Landscape -> Portrait
+                    Offset(x = oldCanvasSize.height - point.y, y = point.x)
+                }
+            }
+            stroke.copy(points = transformedPoints)
+        }
+
+        strokes = transformedStrokes
+        this.orientation = newOrientation
+        this.canvasSize = newCanvasSize
+    }
 
     fun setBrushColor(color: Color) {
         brushColor = color

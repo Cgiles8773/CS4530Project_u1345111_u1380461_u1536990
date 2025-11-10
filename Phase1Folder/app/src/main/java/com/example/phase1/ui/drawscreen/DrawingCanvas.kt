@@ -11,8 +11,10 @@
 
 package com.example.phase1.ui.MainScreen
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.IntSize
 import com.example.phase1.model.BrushShape
 import com.example.phase1.vm.DrawingViewModel
@@ -33,6 +36,7 @@ import com.example.phase1.vm.DrawingViewModel
 // ------------------------------------------------------
 @Composable
 fun DrawingCanvas(viewModel: DrawingViewModel) {
+    val configuration = LocalConfiguration.current
     val bitMap = viewModel.getBitmap()
     Canvas(
         modifier = Modifier
@@ -62,68 +66,108 @@ fun DrawingCanvas(viewModel: DrawingViewModel) {
         if (bitMap != null) {
             drawImage(
                 image = bitMap.asImageBitmap(),
-                dstSize = IntSize(size.width.toInt(), size.height.toInt())
+                dstSize = IntSize(bitMap.width*2, bitMap.height*2)
             )
         }
         else
         {
             drawRect(color = Color.White, size = size)
         }
-        viewModel.strokes.forEach { stroke ->
-            val points = stroke.points
+        //LANDSCAPE
+        when(configuration.orientation) { Configuration.ORIENTATION_LANDSCAPE -> {
+                viewModel.strokes.forEach { stroke ->
+                    val points = stroke.points
+                    if (points.size == 1) {
+                        // Handle single-tap strokes
+                        when (stroke.shape) {
+                            BrushShape.Square -> drawRect(
+                                color = stroke.color.copy(alpha = stroke.alpha),
+                                topLeft = points[0] - Offset(6f, 6f),
+                                size = androidx.compose.ui.geometry.Size(stroke.size, stroke.size)
+                            )
 
-            if (points.size == 1) {
-                // Handle single-tap strokes
-                when (stroke.shape) {
-                    BrushShape.Square -> drawRect(
-                        color = stroke.color.copy(alpha = stroke.alpha),
-                        topLeft = points[0] - Offset(6f, 6f),
-                        size = androidx.compose.ui.geometry.Size(stroke.size, stroke.size)
-                    )
+                            BrushShape.Circle -> drawCircle(
+                                color = stroke.color.copy(alpha = stroke.alpha),
+                                radius = stroke.size/2,
+                                center = points[0]
+                            )
 
-                    BrushShape.Circle -> drawCircle(
-                        color = stroke.color.copy(alpha = stroke.alpha),
-                        radius = stroke.size/2,
-                        center = points[0]
-                    )
-
-                    BrushShape.Triangle -> {
-                        val halfSize = stroke.size/2
-                        val trianglePath = Path().apply {
-                            moveTo(points[0].x, points[0].y - halfSize)
-                            lineTo(points[0].x - halfSize, points[0].y + halfSize)
-                            lineTo(points[0].x + halfSize, points[0].y + halfSize)
-                            close()
+                            BrushShape.Triangle -> {
+                                val halfSize = stroke.size/2
+                                val trianglePath = Path().apply {
+                                    moveTo(points[0].x, points[0].y - halfSize)
+                                    lineTo(points[0].x - halfSize, points[0].y + halfSize)
+                                    lineTo(points[0].x + halfSize, points[0].y + halfSize)
+                                    close()
+                                }
+                                drawPath(
+                                    path = trianglePath,
+                                    color = stroke.color.copy(alpha = stroke.alpha)
+                                )
+                            }
                         }
-                        drawPath(
-                            path = trianglePath,
-                            color = stroke.color.copy(alpha = stroke.alpha)
-                        )
+                    } else {
+                        // Handle normal multi-point strokes
+                        for (i in 0 until points.size - 1) {
+                            when (stroke.shape) {
+                                BrushShape.Square -> drawLine(
+                                    color = stroke.color.copy(alpha = stroke.alpha),
+                                    start = points[i],
+                                    end = points[i + 1],
+                                    strokeWidth = stroke.size
+                                )
+
+                                BrushShape.Circle -> drawCircle(
+                                    color = stroke.color.copy(alpha = stroke.alpha),
+                                    radius = stroke.size/2,
+                                    center = points[i]
+                                )
+
+                                BrushShape.Triangle -> {
+                                    val halfSize = stroke.size/2
+                                    val trianglePath = Path().apply {
+                                        moveTo(points[i].x, points[i].y - halfSize)
+                                        lineTo(points[i].x - halfSize, points[i].y + halfSize)
+                                        lineTo(points[i].x + halfSize, points[i].y + halfSize)
+                                        close()
+                                    }
+                                    drawPath(
+                                        path = trianglePath,
+                                        color = stroke.color.copy(alpha = stroke.alpha)
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
-            } else {
-                // Handle normal multi-point strokes
-                for (i in 0 until points.size - 1) {
+            }
+        }
+        //PORTRAIT
+        when(configuration.orientation) { Configuration.ORIENTATION_PORTRAIT -> {
+            viewModel.strokes.forEach { stroke ->
+                val points = stroke.points
+
+                if (points.size == 1) {
+                    // Handle single-tap strokes
                     when (stroke.shape) {
-                        BrushShape.Square -> drawLine(
+                        BrushShape.Square -> drawRect(
                             color = stroke.color.copy(alpha = stroke.alpha),
-                            start = points[i],
-                            end = points[i + 1],
-                            strokeWidth = stroke.size
+                            topLeft = points[0] - Offset(6f, 6f),
+                            size = androidx.compose.ui.geometry.Size(stroke.size, stroke.size)
                         )
 
                         BrushShape.Circle -> drawCircle(
                             color = stroke.color.copy(alpha = stroke.alpha),
                             radius = stroke.size/2,
-                            center = points[i]
+                            center = points[0]
                         )
 
                         BrushShape.Triangle -> {
                             val halfSize = stroke.size/2
                             val trianglePath = Path().apply {
-                                moveTo(points[i].x, points[i].y - halfSize)
-                                lineTo(points[i].x - halfSize, points[i].y + halfSize)
-                                lineTo(points[i].x + halfSize, points[i].y + halfSize)
+                                moveTo(points[0].x, points[0].y - halfSize)
+                                lineTo(points[0].x - halfSize, points[0].y + halfSize)
+                                lineTo(points[0].x + halfSize, points[0].y + halfSize)
                                 close()
                             }
                             drawPath(
@@ -132,7 +176,40 @@ fun DrawingCanvas(viewModel: DrawingViewModel) {
                             )
                         }
                     }
+                } else {
+                    // Handle normal multi-point strokes
+                    for (i in 0 until points.size - 1) {
+                        when (stroke.shape) {
+                            BrushShape.Square -> drawLine(
+                                color = stroke.color.copy(alpha = stroke.alpha),
+                                start = points[i],
+                                end = points[i + 1],
+                                strokeWidth = stroke.size
+                            )
+
+                            BrushShape.Circle -> drawCircle(
+                                color = stroke.color.copy(alpha = stroke.alpha),
+                                radius = stroke.size/2,
+                                center = points[i]
+                            )
+
+                            BrushShape.Triangle -> {
+                                val halfSize = stroke.size/2
+                                val trianglePath = Path().apply {
+                                    moveTo(points[i].x, points[i].y - halfSize)
+                                    lineTo(points[i].x - halfSize, points[i].y + halfSize)
+                                    lineTo(points[i].x + halfSize, points[i].y + halfSize)
+                                    close()
+                                }
+                                drawPath(
+                                    path = trianglePath,
+                                    color = stroke.color.copy(alpha = stroke.alpha)
+                                )
+                            }
+                        }
+                    }
                 }
+            }
             }
         }
     }

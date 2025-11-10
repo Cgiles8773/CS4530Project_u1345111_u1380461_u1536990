@@ -59,13 +59,8 @@ fun MainScreen(navController: NavController, viewModel: DrawingViewModel, filepa
     val configuration = LocalConfiguration.current
     val orientation = configuration.orientation
 
-    LaunchedEffect(orientation) {
-        Modifier.onGloballyPositioned { coordinates ->
-            Log.d(
-                "Orientation",
-                if (orientation == Configuration.ORIENTATION_PORTRAIT) "Portrait" else "Landscape"
-            )
-        }
+    LaunchedEffect(orientation, canvasSize.value) {
+        viewModel.onOrientationChanged(orientation, canvasSize.value)
     }
 
     Scaffold(
@@ -109,10 +104,6 @@ fun MainScreen(navController: NavController, viewModel: DrawingViewModel, filepa
                             .border(5.dp, Color.Black)
                             .onGloballyPositioned{coordinates -> canvasSize.value = coordinates.size }
                             .padding(3.dp)
-                            .onGloballyPositioned { coordinates ->
-                                val size = coordinates.size
-                                Log.d("CanvasSize", "Width: ${size.width}, Height: ${size.height}")
-                            }
                     ) {
                         DrawingCanvas(viewModel)
                     }
@@ -152,10 +143,6 @@ fun MainScreen(navController: NavController, viewModel: DrawingViewModel, filepa
                                 .border(5.dp, Color.Black)
                                 .onGloballyPositioned{coordinates -> canvasSize.value = coordinates.size }
                                 .padding(3.dp)
-                                .onGloballyPositioned { coordinates ->
-                                    val size = coordinates.size
-                                    Log.d("CanvasSize", "Width: ${size.width}, Height: ${size.height}")
-                                }
                         ) {
                             DrawingCanvas(viewModel)
                         }
