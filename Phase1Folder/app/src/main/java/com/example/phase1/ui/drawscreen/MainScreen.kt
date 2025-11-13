@@ -80,6 +80,17 @@ fun MainScreen(navController: NavController, viewModel: DrawingViewModel, filepa
                                     onClick = { viewModel.clearCanvas() }) { Text("Clear") }
                                 Button(
                                     onClick = { viewModel.toggleSettings() }) { Text("Settings") }
+                                Button(
+                                    onClick = {
+                                        val bmp = viewModel.getBitmap()
+                                        if (bmp != null) {
+                                            viewModel.analyzeImage(bmp)
+                                            navController.navigate("analysis")
+                                        } else {
+                                            Log.d("AI", "No background image to analyze")
+                                        }
+                                    }
+                                ) { Text("Analyze") }
                             }
                         }
                 )
@@ -159,6 +170,18 @@ fun MainScreen(navController: NavController, viewModel: DrawingViewModel, filepa
                                 onClick = { viewModel.clearCanvas() }) { Text("Clear") }
                             Button(modifier = Modifier.width(buttonWidth),
                                 onClick = { viewModel.toggleSettings() }) { Text("Settings") }
+                            Button(
+                                modifier = Modifier.width(buttonWidth),
+                                onClick = {
+                                    val bmp = viewModel.getBitmap()
+                                    if (bmp != null) {
+                                        viewModel.analyzeImage(bmp)
+                                        navController.navigate("analysis")
+                                    } else {
+                                        Log.d("AI", "No background image to analyze")
+                                    }
+                                }
+                            ) { Text("Analyze") }
                         }
                         ////////////////////////////////////////////////
                         if (viewModel.showSettings) {
