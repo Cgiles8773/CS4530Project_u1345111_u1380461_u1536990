@@ -18,6 +18,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String",
+            "VISION_API_KEY",
+            "\"${project.findProperty("VISION_API_KEY")}\""
+        )
     }
 
     buildTypes {
@@ -75,18 +81,21 @@ dependencies {
 // Mockito
     testImplementation("org.mockito:mockito-core:5.12.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
-    // ✅ AndroidX test utilities (for ApplicationProvider, etc.)
     testImplementation("androidx.test:core:1.5.0")
     testImplementation("androidx.test.ext:junit:1.1.5")
 
-// ✅ Coroutines test (for runTest)
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
 
-// ✅ Room in-memory DB testing
     testImplementation("androidx.room:room-testing:2.6.1")
 
-// ✅ Lifecycle + LiveData testing utilities
     testImplementation("androidx.arch.core:core-testing:2.2.0")
+
+    implementation("io.ktor:ktor-client-core:2.3.2")
+    implementation("io.ktor:ktor-client-cio:2.3.2")
+    implementation("io.ktor:ktor-client-json:2.3.2")
+    implementation("io.ktor:ktor-client-logging:2.3.2")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.2")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.2")
 
 
 
