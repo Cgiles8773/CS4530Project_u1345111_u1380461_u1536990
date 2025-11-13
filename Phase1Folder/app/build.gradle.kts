@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.0"
+
 }
 
 android {
@@ -97,6 +99,15 @@ dependencies {
     implementation("io.ktor:ktor-client-logging:2.3.2")
     implementation("io.ktor:ktor-client-content-negotiation:2.3.2")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.2")
+    // Ktor core
+    implementation("io.ktor:ktor-client-core:2.3.4")
+
+// Android engine
+    implementation("io.ktor:ktor-client-android:2.3.4")
+
+// Serialization
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.4")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.4")
 
 
 

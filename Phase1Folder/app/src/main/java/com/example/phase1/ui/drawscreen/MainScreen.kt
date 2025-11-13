@@ -187,9 +187,14 @@ fun MainScreen(navController: NavController, viewModel: DrawingViewModel, filepa
                                 modifier = Modifier.width(buttonWidth),
                                 onClick = {
                                     val bmp = viewModel.getBitmap()
+                                    Log.d("AI", "Bitmap from viewModel = ${bmp != null}")
+
                                     if (bmp != null) {
                                         val savedPath = viewModel.saveTempBitmap(bmp)
+                                        Log.d("AI", "Saved temp path = $savedPath")
+
                                         val encoded = URLEncoder.encode(savedPath, StandardCharsets.UTF_8.toString())
+
                                         navController.navigate("analysis/$encoded")
                                     } else {
                                         Log.d("AI", "No background image to analyze")

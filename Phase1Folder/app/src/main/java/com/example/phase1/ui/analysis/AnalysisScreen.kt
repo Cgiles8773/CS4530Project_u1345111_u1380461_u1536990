@@ -1,5 +1,6 @@
 package com.example.phase1.ui.analysis
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.material.icons.Icons
 
@@ -15,18 +16,20 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.phase1.vm.DrawingViewModel
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.navigation.NavHostController
 import com.example.phase1.data.repository.vision.VisionObject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnalysisScreen(
-    navController: NavController,
+    navController: NavHostController,
     filePath: String
 ) {
     val viewModel: DrawingViewModel = hiltViewModel()
@@ -37,6 +40,14 @@ fun AnalysisScreen(
     }
 
     val state = viewModel.visionState
+    LaunchedEffect(bitmap) {
+        if (bitmap != null) {
+            Log.d("AI", "AnalysisScreen: Calling analyzeImage()")
+            viewModel.analyzeImage(bitmap.asAndroidBitmap())
+        } else {
+            Log.d("AI", "AnalysisScreen: Bitmap is NULL, cannot analyze")
+        }
+    }
 
     Scaffold(
         topBar = {
