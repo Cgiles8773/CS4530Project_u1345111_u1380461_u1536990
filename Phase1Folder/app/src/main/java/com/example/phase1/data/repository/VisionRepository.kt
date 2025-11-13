@@ -44,7 +44,7 @@ class VisionRepository {
                     setBody(request)
                 }.body()
 
-            val first = response.responses.firstOrNull()
+            val first = response.responses?.firstOrNull()
                 ?: return Result.failure(Exception("Empty Vision API response"))
 
             Result.success(first)

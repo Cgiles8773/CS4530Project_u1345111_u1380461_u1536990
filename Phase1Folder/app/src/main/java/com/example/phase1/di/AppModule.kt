@@ -13,6 +13,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import com.example.phase1.data.repository.VisionRepository
+
+
 
 @Module
 @InstallIn(SingletonComponent::class)

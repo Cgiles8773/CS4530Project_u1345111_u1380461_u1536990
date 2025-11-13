@@ -32,12 +32,7 @@ import javax.inject.Inject
 // -------------------------
 // AI RESULT DATA CLASS
 // -------------------------
-data class VisionUiState(
-    val isLoading: Boolean = false,
-    val labels: List<VisionLabel> = emptyList(),
-    val objects: List<VisionObject> = emptyList(),
-    val errorMessage: String? = null
-)
+
 
 @HiltViewModel
 class DrawingViewModel @Inject constructor(

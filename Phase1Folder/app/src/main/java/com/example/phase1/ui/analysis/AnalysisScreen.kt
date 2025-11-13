@@ -17,7 +17,12 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.phase1.vm.DrawingViewModel
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnalysisScreen(
     navController: NavController,
@@ -34,8 +39,9 @@ fun AnalysisScreen(
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             tint = Color.Black,
-                            imageVector = androidx.compose.material.icons.Icons.Default.ArrowBack,
-                            contentDescription = "Back"
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+
+                                    contentDescription = "Back"
                         )
                     }
                 }
