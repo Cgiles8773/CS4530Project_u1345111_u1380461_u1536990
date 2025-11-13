@@ -34,6 +34,7 @@ import javax.inject.Inject
 // -------------------------
 
 
+
 @HiltViewModel
 class DrawingViewModel @Inject constructor(
     private val imageRepository: ImageRepository,
@@ -187,6 +188,19 @@ class DrawingViewModel @Inject constructor(
     // --------------------------------------
     // AI: ANALYZE IMAGE FUNCTION
     // --------------------------------------
+
+    fun loadBitmapFromPath(path: String): Bitmap? {
+        return imageHandler.loadBitmapFromFile(path)
+    }
+    fun saveTempBitmap(bitmap: Bitmap?): String {
+        if (bitmap == null) throw IllegalArgumentException("Bitmap is null")
+
+        val filename = "analysis_temp_${System.currentTimeMillis()}.png"
+
+        return imageHandler.saveBitmapToFile(bitmap, filename)
+            ?: throw IllegalStateException("Failed to save temp bitmap")
+    }
+
     fun analyzeImage(bitmap: Bitmap) {
         viewModelScope.launch {
             visionState = VisionUiState(isLoading = true)

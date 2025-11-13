@@ -1,10 +1,3 @@
-/**
- * Eric Nguyen, Jacob Nguyen, Collin Giles
- * Fall 2025, CS4530
- *
- * Navigation for the entire app.
- */
-
 package com.example.phase1.ui.Navigation
 
 import androidx.compose.runtime.Composable
@@ -17,11 +10,12 @@ import androidx.navigation.navArgument
 import com.example.phase1.ui.MainScreen.MainScreen
 import com.example.phase1.ui.SplashScreen.SplashScreen
 import com.example.phase1.ui.homescreen.HomeScreen
-import com.example.phase1.ui.analysis.AnalysisScreen       // 👈 NEW SCREEN
+import com.example.phase1.ui.analysis.AnalysisScreen
 import com.example.phase1.vm.DrawingViewModel
 import com.example.phase1.vm.HomeViewModel
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
+
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -31,35 +25,41 @@ fun NavGraph(navController: NavHostController) {
             SplashScreen(navController)
         }
 
+        // MAIN with filePath
         composable(
             route = "main/{filePath}",
-            arguments = listOf(
-                navArgument("filePath") { type = NavType.StringType }
-            )
+            arguments = listOf(navArgument("filePath") { type = NavType.StringType })
         ) { backStackEntry ->
-            val viewModel: DrawingViewModel = hiltViewModel()
-
+            val vm: DrawingViewModel = hiltViewModel()
             val decodedPath = backStackEntry.arguments?.getString("filePath")?.let {
                 URLDecoder.decode(it, StandardCharsets.UTF_8.toString())
             }
-            viewModel.loadDrawing(decodedPath)
-            MainScreen(navController, viewModel, decodedPath)
+            vm.loadDrawing(decodedPath)
+            MainScreen(navController, vm, decodedPath)
         }
 
+        // MAIN blank
         composable("main") {
-            val viewModel: DrawingViewModel = hiltViewModel()
-            MainScreen(navController, viewModel, null)
+            val vm: DrawingViewModel = hiltViewModel()
+            MainScreen(navController, vm, null)
         }
 
+        // HOME
         composable("home") {
-            val viewModel: HomeViewModel = hiltViewModel()
-            HomeScreen(navController, viewModel)
+            val vm: HomeViewModel = hiltViewModel()
+            HomeScreen(navController, vm)
         }
 
-        // ⭐ NEW: ANALYSIS SCREEN
-        composable("analysis") {
-            val viewModel: DrawingViewModel = hiltViewModel()
-            AnalysisScreen(navController, viewModel)
+        // ⭐ ANALYSIS (correct version)
+        composable(
+            route = "analysis/{filePath}",
+            arguments = listOf(navArgument("filePath") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val decoded = URLDecoder.decode(
+                backStackEntry.arguments!!.getString("filePath")!!,
+                StandardCharsets.UTF_8.toString()
+            )
+            AnalysisScreen(navController, decoded)
         }
     }
 }

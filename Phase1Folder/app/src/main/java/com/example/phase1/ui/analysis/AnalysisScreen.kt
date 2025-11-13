@@ -1,12 +1,14 @@
 package com.example.phase1.ui.analysis
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.material.icons.Icons
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -16,20 +18,25 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.phase1.vm.DrawingViewModel
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
-
+import com.example.phase1.data.repository.vision.VisionObject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnalysisScreen(
     navController: NavController,
-    viewModel: DrawingViewModel
+    filePath: String
 ) {
+    val viewModel: DrawingViewModel = hiltViewModel()
+
+    // Load bitmap from given file path
+    val bitmap: ImageBitmap? = remember(filePath) {
+        viewModel.loadBitmapFromPath(filePath)?.asImageBitmap()
+    }
+
     val state = viewModel.visionState
-    val bitmap = viewModel.background?.asImageBitmap()
 
     Scaffold(
         topBar = {
@@ -38,10 +45,9 @@ fun AnalysisScreen(
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
-                            tint = Color.Black,
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-
-                                    contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = Color.Black
                         )
                     }
                 }
@@ -74,8 +80,10 @@ fun AnalysisScreen(
             bitmap != null -> {
                 AnalysisContent(
                     bitmap = bitmap,
-                    labels = state.labels.map { "${it.description} — ${(it.score ?: 0f) * 100}%" },
                     objects = state.objects,
+                    labels = state.labels.map {
+                        "${it.description} — ${(it.score ?: 0f) * 100}%"
+                    },
                     modifier = Modifier.padding(padding)
                 )
             }
@@ -98,7 +106,7 @@ fun AnalysisScreen(
 private fun AnalysisContent(
     bitmap: ImageBitmap,
     labels: List<String>,
-    objects: List<com.example.phase1.data.repository.vision.VisionObject>,
+    objects: List<VisionObject>,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -109,7 +117,7 @@ private fun AnalysisContent(
         Text("AI Results", style = MaterialTheme.typography.titleLarge)
         Spacer(Modifier.height(12.dp))
 
-        // ⭐ IMAGE WITH BOUNDING BOXES
+        // IMAGE + BOXES
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -121,15 +129,13 @@ private fun AnalysisContent(
 
         Spacer(Modifier.height(24.dp))
 
-        // ⭐ LABEL LIST
+        // LABEL LIST
         Text("Detected Labels", style = MaterialTheme.typography.titleMedium)
-        labels.forEach { label ->
-            Text("• $label")
-        }
+        labels.forEach { Text("• $it") }
 
         Spacer(Modifier.height(24.dp))
 
-        // ⭐ OBJECT LIST
+        // OBJECT LIST
         Text("Detected Objects", style = MaterialTheme.typography.titleMedium)
         objects.forEach { obj ->
             Text("• ${obj.name} — ${(obj.score ?: 0f) * 100}%")
@@ -140,9 +146,10 @@ private fun AnalysisContent(
 @Composable
 private fun ImageWithBoundingBoxes(
     bitmap: ImageBitmap,
-    objects: List<com.example.phase1.data.repository.vision.VisionObject>
+    objects: List<VisionObject>
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
+
         Image(
             bitmap = bitmap,
             contentDescription = null,
@@ -169,7 +176,10 @@ private fun ImageWithBoundingBoxes(
 
                 drawRect(
                     topLeft = Offset(left, top),
-                    size = androidx.compose.ui.geometry.Size(right - left, bottom - top),
+                    size = androidx.compose.ui.geometry.Size(
+                        right - left,
+                        bottom - top
+                    ),
                     color = Color.Red,
                     style = Stroke(width = 4f)
                 )

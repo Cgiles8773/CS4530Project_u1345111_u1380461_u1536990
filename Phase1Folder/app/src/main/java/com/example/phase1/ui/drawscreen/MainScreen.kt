@@ -13,6 +13,8 @@ package com.example.phase1.ui.MainScreen
 import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.foundation.border
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -70,8 +72,10 @@ fun MainScreen(navController: NavController, viewModel: DrawingViewModel, filepa
                 BottomAppBar (
                     actions =
                         {
-                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly)
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly,)
                             {
+                                val buttonWidth = 90.dp
+
                                 Button(
                                     onClick = { viewModel.toggleSave() }) { Text("Save") }
                                 Button(
@@ -81,16 +85,25 @@ fun MainScreen(navController: NavController, viewModel: DrawingViewModel, filepa
                                 Button(
                                     onClick = { viewModel.toggleSettings() }) { Text("Settings") }
                                 Button(
+                                    modifier = Modifier.width(buttonWidth),
                                     onClick = {
                                         val bmp = viewModel.getBitmap()
                                         if (bmp != null) {
-                                            viewModel.analyzeImage(bmp)
-                                            navController.navigate("analysis")
+                                            val tempPath = viewModel.saveTempBitmap(bmp)
+                                            if (tempPath != null) {
+                                                val encoded = URLEncoder.encode(tempPath, StandardCharsets.UTF_8.toString())
+                                                navController.navigate("analysis/$encoded")
+                                            } else {
+                                                Log.d("AI", "Failed to save temp bitmap")
+                                            }
                                         } else {
-                                            Log.d("AI", "No background image to analyze")
+                                            Log.d("AI", "No bitmap to analyze")
                                         }
                                     }
-                                ) { Text("Analyze") }
+                                ) {
+                                    Text("Analyze")
+                                }
+
                             }
                         }
                 )
@@ -175,13 +188,15 @@ fun MainScreen(navController: NavController, viewModel: DrawingViewModel, filepa
                                 onClick = {
                                     val bmp = viewModel.getBitmap()
                                     if (bmp != null) {
-                                        viewModel.analyzeImage(bmp)
-                                        navController.navigate("analysis")
+                                        val savedPath = viewModel.saveTempBitmap(bmp)
+                                        val encoded = URLEncoder.encode(savedPath, StandardCharsets.UTF_8.toString())
+                                        navController.navigate("analysis/$encoded")
                                     } else {
                                         Log.d("AI", "No background image to analyze")
                                     }
                                 }
                             ) { Text("Analyze") }
+
                         }
                         ////////////////////////////////////////////////
                         if (viewModel.showSettings) {

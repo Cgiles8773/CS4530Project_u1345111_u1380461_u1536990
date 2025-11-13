@@ -137,4 +137,5 @@ class ImageHandler(private val context: Context) {
         val file = File(filepath)
         if (file.exists()) file.delete()
     }
+
 }
