@@ -13,6 +13,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import com.example.phase1.data.repository.VisionRepository
+
+
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -45,4 +48,11 @@ object AppModule {
     fun provideImageRepository(imageDao: ImageDao, imageHandler: ImageHandler): ImageRepository {
         return ImageRepositoryImpl(imageDao, imageHandler)
     }
+
+    @Provides
+    @Singleton
+    fun provideVisionRepository(): VisionRepository {
+        return VisionRepository()
+    }
+
 }
