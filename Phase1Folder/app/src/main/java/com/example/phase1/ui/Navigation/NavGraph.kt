@@ -1,3 +1,11 @@
+/**
+ * Eric Nguyen, Jacob Nguyen, Collin Giles
+ * Fall 2025, CS4530
+ *
+ * Navigation graph for the application.
+ * Handles routing between splash, main, home, and analysis screens.
+ */
+
 package com.example.phase1.ui.Navigation
 
 import androidx.compose.runtime.Composable
@@ -16,47 +24,59 @@ import com.example.phase1.vm.HomeViewModel
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 
-
 @Composable
 fun NavGraph(navController: NavHostController) {
-    NavHost(navController, startDestination = "splash") {
 
+    NavHost(
+        navController = navController,
+        startDestination = "splash"
+    ) {
+
+        // Splash screen
         composable("splash") {
             SplashScreen(navController)
         }
 
-        // MAIN with filePath
+        // Main screen with file path
         composable(
             route = "main/{filePath}",
-            arguments = listOf(navArgument("filePath") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val vm: DrawingViewModel = hiltViewModel()
-            val decodedPath = backStackEntry.arguments?.getString("filePath")?.let {
-                URLDecoder.decode(it, StandardCharsets.UTF_8.toString())
-            }
-            vm.loadDrawing(decodedPath)
-            MainScreen(navController, vm, decodedPath)
+            arguments = listOf(
+                navArgument("filePath") {
+                    type = NavType.StringType
+                }
+            )
+        ) { entry ->
+            val viewModel: DrawingViewModel = hiltViewModel()
+
+            val decodedPath = entry.arguments
+                ?.getString("filePath")
+                ?.let { URLDecoder.decode(it, StandardCharsets.UTF_8.toString()) }
+
+            viewModel.loadDrawing(decodedPath)
+            MainScreen(navController, viewModel, decodedPath)
         }
 
-        // MAIN blank
+        // Main screen without a file
         composable("main") {
-            val vm: DrawingViewModel = hiltViewModel()
-            MainScreen(navController, vm, null)
+            val viewModel: DrawingViewModel = hiltViewModel()
+            MainScreen(navController, viewModel, null)
         }
 
-        // HOME
+        // Home screen
         composable("home") {
-            val vm: HomeViewModel = hiltViewModel()
-            HomeScreen(navController, vm)
+            val homeViewModel: HomeViewModel = hiltViewModel()
+            HomeScreen(navController, homeViewModel)
         }
 
-        // ⭐ ANALYSIS (correct version)
+        // Analysis screen
         composable(
             route = "analysis/{filePath}",
-            arguments = listOf(navArgument("filePath") { type = NavType.StringType })
-        ) { backStackEntry ->
+            arguments = listOf(
+                navArgument("filePath") { type = NavType.StringType }
+            )
+        ) { entry ->
             val decoded = URLDecoder.decode(
-                backStackEntry.arguments!!.getString("filePath")!!,
+                entry.arguments!!.getString("filePath")!!,
                 StandardCharsets.UTF_8.toString()
             )
             AnalysisScreen(navController, decoded)
