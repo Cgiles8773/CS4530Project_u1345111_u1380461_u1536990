@@ -2,7 +2,11 @@
  * Created by Eric Nguyen, Jacob Nguyen, Collin Giles
  * Fall 2025, CS4530
  *
- * Tests the fo
+ * Tests the following
+ * Proper API communication.
+ * Correct parsing and display of API results
+ * Stable app behavior when the API response fails or returns no detections.
+ *
  */
 package com.example.phase1
 
