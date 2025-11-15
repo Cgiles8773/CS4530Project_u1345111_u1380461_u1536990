@@ -22,7 +22,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.*
 
-class ImageRepositoryTest {
+class puImageRepositoryTest {
 
     private lateinit var repo: ImageRepositoryImpl
     private lateinit var mockDao: ImageDao
