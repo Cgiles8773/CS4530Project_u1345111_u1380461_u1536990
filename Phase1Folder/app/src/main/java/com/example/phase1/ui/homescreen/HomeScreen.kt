@@ -70,19 +70,21 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
     var user by remember { mutableStateOf(viewModel.getUser()) }
     // Import screen
     var showImportScreen by remember { mutableStateOf(false) }
+    // Share Screen
+    var shareScreen by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val allImageRecords by viewModel.images.collectAsStateWithLifecycle()
 
     // Image picker
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri ->
-        uri?.let {
-            val encoded = URLEncoder.encode(it.toString(), StandardCharsets.UTF_8.toString())
-            navController.navigate("main/$encoded")
-        }
-    }
+//    val imagePickerLauncher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.GetContent()
+//    ) { uri ->
+//        uri?.let {
+//            val encoded = URLEncoder.encode(it.toString(), StandardCharsets.UTF_8.toString())
+//            navController.navigate("main/$encoded")
+//        }
+//    }
 
     if (user == null) {
         Column(Modifier.padding(15.dp).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -129,6 +131,11 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
 
             if(showImportScreen) {
                 ImportScreen(navController, onDismiss = { showImportScreen = false })
+            }
+            if(shareScreen)
+            {
+                ShareScreen(navController, onDismiss = { shareScreen = false }, filepath = imgRecord.filePath)
+                //TODO: Find a way to pass the filepath of a given image to ShareScreen
             }
 
             // Landscape layout
@@ -240,8 +247,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
                                         Button(
                                             modifier = Modifier.padding(2.dp).width(100.dp),
                                             onClick = {
-                                                Log.d("ShareDebug", "Path: ${imgRecord.filePath}")
-                                                shareImage(context, imgRecord.filePath)
+                                                shareScreen = true
                                             }
                                         ) { Text("Share") }
 
@@ -362,8 +368,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
                                     Button(
                                         modifier = Modifier.padding(2.dp),
                                         onClick = {
-                                            Log.d("ShareDebug", "Path: ${imgRecord.filePath}")
-                                            shareImage(context, imgRecord.filePath)
+                                            shareScreen = true
                                         }
                                     ) { Text("Share") }
 
@@ -385,32 +390,32 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
 /**
  * Share an image using FileProvider.
  */
-fun shareImage(context: Context, imagePath: String) {
-    val file = File(imagePath)
-    if (!file.exists()) return
-
-    val uri = FileProvider.getUriForFile(
-        context,
-        "${context.packageName}.provider",
-        file
-    )
-
-    val intent = Intent(Intent.ACTION_SEND).apply {
-        type = "image/*"
-        putExtra(Intent.EXTRA_STREAM, uri)
-        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-    }
-
-    val chooser = Intent.createChooser(intent, "Share Image")
-    val resInfoList = context.packageManager.queryIntentActivities(chooser, 0)
-
-    resInfoList.forEach {
-        context.grantUriPermission(
-            it.activityInfo.packageName,
-            uri,
-            Intent.FLAG_GRANT_READ_URI_PERMISSION
-        )
-    }
-
-    context.startActivity(chooser)
-}
+//fun shareImage(context: Context, imagePath: String) {
+//    val file = File(imagePath)
+//    if (!file.exists()) return
+//
+//    val uri = FileProvider.getUriForFile(
+//        context,
+//        "${context.packageName}.provider",
+//        file
+//    )
+//
+//    val intent = Intent(Intent.ACTION_SEND).apply {
+//        type = "image/*"
+//        putExtra(Intent.EXTRA_STREAM, uri)
+//        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+//    }
+//
+//    val chooser = Intent.createChooser(intent, "Share Image")
+//    val resInfoList = context.packageManager.queryIntentActivities(chooser, 0)
+//
+//    resInfoList.forEach {
+//        context.grantUriPermission(
+//            it.activityInfo.packageName,
+//            uri,
+//            Intent.FLAG_GRANT_READ_URI_PERMISSION
+//        )
+//    }
+//
+//    context.startActivity(chooser)
+//}

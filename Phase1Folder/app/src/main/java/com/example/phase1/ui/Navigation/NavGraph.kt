@@ -19,6 +19,7 @@ import com.example.phase1.ui.MainScreen.MainScreen
 import com.example.phase1.ui.SplashScreen.SplashScreen
 import com.example.phase1.ui.homescreen.HomeScreen
 import com.example.phase1.ui.analysis.AnalysisScreen
+import com.example.phase1.ui.communityscreen.CommunityScreen
 import com.example.phase1.ui.login.LoginScreen
 import com.example.phase1.vm.DrawingViewModel
 import com.example.phase1.vm.HomeViewModel
@@ -99,8 +100,9 @@ fun NavGraph(navController: NavHostController) {
             route = "community"
         )
         {
-            //TODO: implement community screen
-            CommunityScreen(navController)
+            val homeViewModel: HomeViewModel = hiltViewModel()
+            val drawingViewModel: DrawingViewModel = hiltViewModel()
+            CommunityScreen(homeViewModel, drawingViewModel, navController)
         }
     }
 }

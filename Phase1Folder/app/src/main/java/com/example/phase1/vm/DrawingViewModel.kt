@@ -20,12 +20,14 @@ import androidx.compose.ui.unit.IntSize
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.phase1.data.file.ImageHandler
+import com.example.phase1.data.local.ImageRecord
 import com.example.phase1.data.repository.ImageRepository
 import com.example.phase1.data.repository.VisionRepository
 import com.example.phase1.model.BrushShape
 import com.example.phase1.model.Stroke
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -148,6 +150,29 @@ class DrawingViewModel @Inject constructor(
             imageRepository.saveImage(name, bmp)
         }
     }
+
+    /**
+     * Saves the current drawing as a local copy.
+     * This saves the bitmap to local storage and creates a record in the local database.
+     */
+    fun saveImageAsCopy(name: String, width: Int, height: Int) {
+        viewModelScope.launch {
+            val finalBitmap = imageHandler.saveStrokesToBitmap(background, strokes, width, height)
+            val uniqueFilename = "${name.replace(" ", "_")}_${System.currentTimeMillis()}.png"
+            val filePath = imageHandler.saveBitmapToFile(finalBitmap, uniqueFilename)
+
+            if (filePath != null) {
+                // 3. Create an ImageRecord for the local database
+                val imageRecord = ImageRecord(
+                    name = name,
+                    filePath = filePath,
+                    date = System.currentTimeMillis()
+                )
+                imageRepository.insertImage(imageRecord)
+            }
+        }
+    }
+
 
     // Load bitmap from file (used by AnalysisScreen)
     fun loadBitmapFromPath(path: String): Bitmap? {

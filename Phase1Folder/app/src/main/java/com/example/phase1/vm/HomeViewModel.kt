@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.phase1.data.local.ImageRecord
 import com.example.phase1.data.repository.ImageRepository
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.DocumentSnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -45,5 +46,39 @@ class HomeViewModel @Inject constructor(
     suspend fun logout() : String?
     {
         return imageRepository.logout()
+    }
+
+    suspend fun getAllDocuments() : List<DocumentSnapshot>?
+    {
+        return imageRepository.getAllDocumentsFirestore()
+    }
+
+    suspend fun getAllDocuments(uid: String) : List<DocumentSnapshot>?
+    {
+        val list = mutableListOf<DocumentSnapshot>()
+        val documents = imageRepository.getAllDocumentsFirestore()
+        if (documents == null) {return null}
+        for (document in documents)
+        {
+            if(document.getString("uid") == uid)
+            {
+                list.add(document)
+            }
+        }
+        return list
+    }
+    suspend fun getAllDocumentsExcluding(uid: String) : List<DocumentSnapshot>?
+    {
+        val list = mutableListOf<DocumentSnapshot>()
+        val documents = imageRepository.getAllDocumentsFirestore()
+        if (documents == null) {return null}
+        for (document in documents)
+        {
+            if(document.getString("uid") != uid)
+            {
+                list.add(document)
+            }
+        }
+        return list
     }
 }
