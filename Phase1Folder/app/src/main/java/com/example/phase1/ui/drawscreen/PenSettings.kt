@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.phase1.model.BrushShape
-import com.example.phase1.ui.theme.Purple40
+import com.example.phase1.ui.theme.*
 import com.example.phase1.vm.DrawingViewModel
 import kotlin.math.floor
 import kotlin.math.sqrt
@@ -104,7 +104,7 @@ fun SettingsWindow(viewModel: DrawingViewModel, onDismiss: () -> Unit) {
                                 Box(
                                     Modifier
                                         .size(24.dp)
-                                        .background(color = Purple40, shape = CircleShape),
+                                        .background(color = Primary, shape = CircleShape),
                                     contentAlignment = Alignment.Center
                                 ) { }
                             },
@@ -231,7 +231,7 @@ fun SettingsWindow(viewModel: DrawingViewModel, onDismiss: () -> Unit) {
                                     Box(
                                         Modifier
                                             .size(24.dp)
-                                            .background(color = Purple40, shape = CircleShape),
+                                            .background(color = Primary, shape = CircleShape),
                                         contentAlignment = Alignment.Center
                                     ) { }
                                 },
