@@ -1,10 +1,13 @@
 plugins {
+//    id("com.android.application")
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.services) // keep this last among plugins
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.0"
+
 }
 
 android {
@@ -54,6 +57,15 @@ android {
 }
 
 dependencies {
+    implementation("io.coil-kt:coil-compose:2.6.0")
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))          // BOM must come before Firebase libs
+    implementation(libs.firebase.auth)                   // Firebase Auth KTX
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.analytics)              // optional
+    implementation(libs.coroutines.play.services)        // coroutine support for Firebase
+
     // Compose + Android
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -73,6 +85,7 @@ dependencies {
     // Room
     implementation(libs.androidx.room.common.jvm)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.firebase.storage)
     kapt("androidx.room:room-compiler:2.8.2")
 
     // UI libraries

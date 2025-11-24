@@ -19,8 +19,10 @@ import com.example.phase1.ui.MainScreen.MainScreen
 import com.example.phase1.ui.SplashScreen.SplashScreen
 import com.example.phase1.ui.homescreen.HomeScreen
 import com.example.phase1.ui.analysis.AnalysisScreen
+import com.example.phase1.ui.login.LoginScreen
 import com.example.phase1.vm.DrawingViewModel
 import com.example.phase1.vm.HomeViewModel
+import com.example.phase1.vm.LoginViewModel
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 
@@ -80,6 +82,25 @@ fun NavGraph(navController: NavHostController) {
                 StandardCharsets.UTF_8.toString()
             )
             AnalysisScreen(navController, decoded)
+        }
+
+        // Login screen
+        //TODO: Remove after done testing
+        composable(
+            route = "login"
+        )
+        {
+            val loginViewModel: LoginViewModel = hiltViewModel()
+            LoginScreen(navController, loginViewModel)
+        }
+
+        // Community Page
+        composable(
+            route = "community"
+        )
+        {
+            //TODO: implement community screen
+            CommunityScreen(navController)
         }
     }
 }

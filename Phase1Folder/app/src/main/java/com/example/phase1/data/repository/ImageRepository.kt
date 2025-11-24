@@ -2,6 +2,7 @@ package com.example.phase1.data.repository
 
 import android.graphics.Bitmap
 import com.example.phase1.data.local.ImageRecord
+import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.Flow
 
 interface ImageRepository {
@@ -10,4 +11,9 @@ interface ImageRepository {
     suspend fun deleteImage(imageRecord: ImageRecord)
     fun loadBitmap(image: ImageRecord): Bitmap?
     fun loadBitmap(filepath: String): Bitmap?
+
+    fun getUser(): FirebaseUser?
+    suspend fun createUser(email: String, password: String) : String?
+    suspend fun login(email: String, password: String) : String?
+    suspend fun logout() : String?
 }
