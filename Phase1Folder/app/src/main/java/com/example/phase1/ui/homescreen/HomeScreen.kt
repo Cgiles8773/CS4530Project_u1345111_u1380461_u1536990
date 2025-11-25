@@ -6,13 +6,9 @@
 
 package com.example.phase1.ui.homescreen
 
-import android.content.Context
-import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -38,19 +34,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.phase1.data.local.ImageRecord
 import com.example.phase1.vm.HomeViewModel
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
-import com.google.firebase.firestore.firestore
-import com.google.firebase.storage.storage
 import kotlinx.coroutines.launch
-import java.io.File
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -72,19 +62,9 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
     var showImportScreen by remember { mutableStateOf(false) }
     // Share Screen
     var shareScreen by remember { mutableStateOf(false) }
+    var sharedImageRecord by remember { mutableStateOf<ImageRecord?>(null) }
 
-    val context = LocalContext.current
     val allImageRecords by viewModel.images.collectAsStateWithLifecycle()
-
-    // Image picker
-//    val imagePickerLauncher = rememberLauncherForActivityResult(
-//        contract = ActivityResultContracts.GetContent()
-//    ) { uri ->
-//        uri?.let {
-//            val encoded = URLEncoder.encode(it.toString(), StandardCharsets.UTF_8.toString())
-//            navController.navigate("main/$encoded")
-//        }
-//    }
 
     if (user == null) {
         Column(Modifier.padding(15.dp).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -132,10 +112,9 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
             if(showImportScreen) {
                 ImportScreen(navController, onDismiss = { showImportScreen = false })
             }
-            if(shareScreen)
+            if(shareScreen && sharedImageRecord != null)
             {
-                ShareScreen(navController, onDismiss = { shareScreen = false }, filepath = imgRecord.filePath)
-                //TODO: Find a way to pass the filepath of a given image to ShareScreen
+                ShareScreen(navController, onDismiss = { shareScreen = false }, imageRecord = sharedImageRecord!!)
             }
 
             // Landscape layout
@@ -247,6 +226,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
                                         Button(
                                             modifier = Modifier.padding(2.dp).width(100.dp),
                                             onClick = {
+                                                sharedImageRecord = imgRecord
                                                 shareScreen = true
                                             }
                                         ) { Text("Share") }
@@ -368,6 +348,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
                                     Button(
                                         modifier = Modifier.padding(2.dp),
                                         onClick = {
+                                            sharedImageRecord = imgRecord
                                             shareScreen = true
                                         }
                                     ) { Text("Share") }
@@ -386,36 +367,3 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
         }
     }
 }
-
-/**
- * Share an image using FileProvider.
- */
-//fun shareImage(context: Context, imagePath: String) {
-//    val file = File(imagePath)
-//    if (!file.exists()) return
-//
-//    val uri = FileProvider.getUriForFile(
-//        context,
-//        "${context.packageName}.provider",
-//        file
-//    )
-//
-//    val intent = Intent(Intent.ACTION_SEND).apply {
-//        type = "image/*"
-//        putExtra(Intent.EXTRA_STREAM, uri)
-//        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-//    }
-//
-//    val chooser = Intent.createChooser(intent, "Share Image")
-//    val resInfoList = context.packageManager.queryIntentActivities(chooser, 0)
-//
-//    resInfoList.forEach {
-//        context.grantUriPermission(
-//            it.activityInfo.packageName,
-//            uri,
-//            Intent.FLAG_GRANT_READ_URI_PERMISSION
-//        )
-//    }
-//
-//    context.startActivity(chooser)
-//}

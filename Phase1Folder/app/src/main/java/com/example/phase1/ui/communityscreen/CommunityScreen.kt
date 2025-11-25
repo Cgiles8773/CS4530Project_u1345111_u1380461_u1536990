@@ -25,7 +25,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +41,7 @@ import coil.compose.AsyncImage
 import com.example.phase1.ui.homescreen.shareImage
 import com.example.phase1.vm.DrawingViewModel
 import com.example.phase1.vm.HomeViewModel
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.tasks.await
@@ -58,55 +61,29 @@ fun CommunityScreen(viewModel: HomeViewModel, drawingViewModel: DrawingViewModel
     val storage = Firebase.storage
 
     val user = viewModel.getUser()
-    // A single list that holds all the data needed for the UI
-//    val userDrawings = remember { mutableStateListOf<Drawing>() }
-    val communityDrawings = remember { mutableStateListOf<Drawing>() }
-
     if (user == null) {
         navController.navigate("login")
+        return
     }
-    val userId = user?.uid
+    val userId = user.uid
 
-    LaunchedEffect(userId) {
-        if (userId != null) {
-            // Assumes these methods now return List<DocumentSnapshot>
-//            val userDrawingDocs = viewModel.getAllDocuments(userId)
-            val communityDrawingDocs = viewModel.getAllDocumentsExcluding(userId)
-
-            // Clear lists before populating
-//            userDrawings.clear()
-            communityDrawings.clear()
-
-            // Process user drawings
-//            userDrawingDocs?.forEach { doc ->
-//                val filePath = doc.getString("filePath")
-//                val title = doc.getString("name") ?: "Untitled"
-//                val author = doc.getString("authorName") ?: "Unknown"
-//                if (filePath != null) {
-//                    try {
-//                        val uri = storage.getReference(filePath).downloadUrl.await()
-//                        userDrawings.add(Drawing(uri, title, author, filePath))
-//                    } catch (e: Exception) {
-//                        Log.e("CommunityScreen", "User image download failed: ${e.message}")
-//                    }
-//                }
-//            }
-
-            // Process community drawings
-            communityDrawingDocs?.forEach { doc ->
-                val filePath = doc.getString("filePath")
-                val title = doc.getString("name") ?: "Untitled"
-                val author = doc.getString("authorName") ?: "Unknown"
-                if (filePath != null) {
-                    try {
-                        val uri = storage.getReference(filePath).downloadUrl.await()
-                        communityDrawings.add(Drawing(uri, title, author, filePath))
-                    } catch (e: Exception) {
-                        Log.e("CommunityScreen", "Community image download failed: ${e.message}")
-                    }
+    val communityDrawings by produceState<List<Drawing>>(initialValue = emptyList(), userId) {
+        val communityDrawingDocs = viewModel.getAllDocuments()
+        val drawings = mutableListOf<Drawing>()
+        communityDrawingDocs?.forEach { doc ->
+            val filePath = doc.getString("filePath")
+            val title = doc.getString("name") ?: "Untitled"
+            val author = doc.getString("authorName") ?: "Unknown"
+            if (filePath != null) {
+                try {
+                    val uri = storage.getReference(filePath).downloadUrl.await()
+                    drawings.add(Drawing(uri, title, author, filePath))
+                } catch (e: Exception) {
+                    Log.e("CommunityScreen", "Community image download failed: ${e.message}")
                 }
             }
         }
+        value = drawings
     }
 
 
@@ -148,7 +125,9 @@ fun CommunityScreen(viewModel: HomeViewModel, drawingViewModel: DrawingViewModel
                             AsyncImage(
                                 model = drawing.uri.toString(),
                                 contentDescription = drawing.title,
-                                modifier = Modifier.height(150.dp).width(150.dp),
+                                modifier = Modifier
+                                    .height(150.dp)
+                                    .width(150.dp),
                                 contentScale = ContentScale.Crop
                             )
 
@@ -204,7 +183,9 @@ fun CommunityScreen(viewModel: HomeViewModel, drawingViewModel: DrawingViewModel
                             AsyncImage(
                                 model = drawing.uri.toString(),
                                 contentDescription = drawing.title,
-                                modifier = Modifier.height(150.dp).width(150.dp),
+                                modifier = Modifier
+                                    .height(150.dp)
+                                    .width(150.dp),
                                 contentScale = ContentScale.Crop
                             )
 

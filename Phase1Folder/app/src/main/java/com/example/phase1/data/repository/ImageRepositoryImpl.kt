@@ -111,20 +111,15 @@ class ImageRepositoryImpl @Inject constructor(
     }
     override suspend fun getAllDocumentsFirestore() : List<DocumentSnapshot>?
     {
-        val list = mutableListOf<DocumentSnapshot>()
-        // Reference the 'user_drawings' collection
-        db.collection("user_drawings")
-            .get() // Retrieve all documents in the collection
-            .addOnSuccessListener { querySnapshot ->
-                for (document in querySnapshot) {
-                    list.add(document)
-                }
-            }
-            .addOnFailureListener { exception ->
-                // Handle any errors that occur during the query
-                Log.w("FirestoreQuery", "Error getting documents: ", exception)
-            }
-        return list
+        return try {
+            db.collection("user_drawings")
+                .get()
+                .await()
+                .documents
+        } catch (e: Exception) {
+            Log.w("FirestoreQuery", "Error getting documents: ", e)
+            null
+        }
     }
 
 }
