@@ -116,6 +116,7 @@ fun uploadImageToFirebase(context: Context, imageRecord: ImageRecord) {
     val firestore = FirebaseFirestore.getInstance()
     val auth = FirebaseAuth.getInstance()
     val userId = auth.currentUser?.uid
+    val userAuthor = auth.currentUser?.email
 
     if (userId == null) {
         Toast.makeText(context, "You must be logged in to upload.", Toast.LENGTH_SHORT).show()
@@ -132,7 +133,8 @@ fun uploadImageToFirebase(context: Context, imageRecord: ImageRecord) {
                     "URL" to uri.toString(),
                     "timestamp" to imageRecord.date,
                     "title" to imageRecord.name,
-                    "userID" to userId
+                    "userID" to userId,
+                    "author" to userAuthor
                 )
 
                 firestore.collection("user_drawings")
