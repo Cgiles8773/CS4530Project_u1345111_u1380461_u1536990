@@ -67,49 +67,6 @@ fun MainScreen(navController: NavController, viewModel: DrawingViewModel, filepa
     }
 
     Scaffold(
-        bottomBar = {
-            when(configuration.orientation) { Configuration.ORIENTATION_PORTRAIT -> {
-                BottomAppBar (
-                    actions =
-                        {
-                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly,)
-                            {
-                                val buttonWidth = 90.dp
-
-                                Button(
-                                    onClick = { viewModel.toggleSave() }) { Text("Save") }
-                                Button(
-                                    onClick = { navController.navigate("home") }) { Text("Home") }
-                                Button(
-                                    onClick = { viewModel.clearCanvas() }) { Text("Clear") }
-                                Button(
-                                    onClick = { viewModel.toggleSettings() }) { Text("Settings") }
-                                Button(
-                                    modifier = Modifier.width(buttonWidth),
-                                    onClick = {
-                                        val bmp = viewModel.getBitmap()
-                                        if (bmp != null) {
-                                            val tempPath = viewModel.saveTempBitmap(bmp)
-                                            if (tempPath != null) {
-                                                val encoded = URLEncoder.encode(tempPath, StandardCharsets.UTF_8.toString())
-                                                navController.navigate("analysis/$encoded")
-                                            } else {
-                                                Log.d("AI", "Failed to save temp bitmap")
-                                            }
-                                        } else {
-                                            Log.d("AI", "No bitmap to analyze")
-                                        }
-                                    }
-                                ) {
-                                    Text("Analyze")
-                                }
-
-                            }
-                        }
-                )
-            }
-            }
-        }
     ) { innerPadding ->
         when(configuration.orientation) { Configuration.ORIENTATION_PORTRAIT ->
         {
@@ -125,12 +82,47 @@ fun MainScreen(navController: NavController, viewModel: DrawingViewModel, filepa
                         modifier = Modifier
                             //TODO
                             .fillMaxWidth(.90f)
-                            .fillMaxHeight()
+                            .fillMaxHeight(.9f)
                             .border(5.dp, Color.Black)
                             .onGloballyPositioned{coordinates -> canvasSize.value = coordinates.size }
                             .padding(3.dp)
                     ) {
                         DrawingCanvas(viewModel)
+                    }
+                    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.SpaceEvenly)
+                    {
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly,)
+                        {
+                            Button(
+                                onClick = { viewModel.toggleSave() }) { Text("Save") }
+                            Button(
+                                onClick = { navController.navigate("home") }) { Text("Home") }
+                            Button(
+                                onClick = { viewModel.clearCanvas() }) { Text("Clear") }
+                        }
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly,)
+                        {
+                            Button(
+                                onClick = { viewModel.toggleSettings() }) { Text("Settings") }
+                            Button(
+                                onClick = {
+                                    val bmp = viewModel.getBitmap()
+                                    if (bmp != null) {
+                                        val tempPath = viewModel.saveTempBitmap(bmp)
+                                        if (tempPath != null) {
+                                            val encoded = URLEncoder.encode(tempPath, StandardCharsets.UTF_8.toString())
+                                            navController.navigate("analysis/$encoded")
+                                        } else {
+                                            Log.d("AI", "Failed to save temp bitmap")
+                                        }
+                                    } else {
+                                        Log.d("AI", "No bitmap to analyze")
+                                    }
+                                }
+                            ) {
+                                Text("Analyze")
+                            }
+                        }
                     }
                     if (viewModel.showSettings) {
                         SettingsWindow(

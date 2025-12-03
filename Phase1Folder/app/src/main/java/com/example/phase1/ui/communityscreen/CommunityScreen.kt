@@ -51,7 +51,11 @@ private data class Drawing(
 )
 
 @Composable
-fun CommunityScreen(viewModel: HomeViewModel, drawingViewModel: DrawingViewModel, navController: NavController) {
+fun CommunityScreen(
+    viewModel: HomeViewModel,
+    drawingViewModel: DrawingViewModel,
+    navController: NavController
+) {
     Log.d("CommunityScreen", "Checkpoint 1")
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp
@@ -77,27 +81,6 @@ fun CommunityScreen(viewModel: HomeViewModel, drawingViewModel: DrawingViewModel
     val userId = user.uid
 
     Log.d("CommunityScreen", "Checkpoint 3")
-
-    // Testing starts
-
-
-//    var dataString by remember { mutableStateOf("") }
-//    LaunchedEffect(user) {
-//        try {
-//            val snapshot = db.collection("user_drawings").get().await()
-//            val doc = snapshot.firstOrNull()
-//            dataString = doc?.data?.toString() ?: "No data found"
-//        }
-//        catch (e: Exception) {
-//            Log.e("Firestore", "Error fetching", e)
-//        }
-//    }
-//
-//    Column {
-//        Text("Data string: $dataString")
-//    }
-    // Testing ends
-
 
     val communityDrawings by produceState(initialValue = emptyList(), userId) {
         Log.d("CommunityScreen", "Checkpoint 4")
@@ -144,107 +127,52 @@ fun CommunityScreen(viewModel: HomeViewModel, drawingViewModel: DrawingViewModel
     ) {
         // Landscape layout
         if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            Spacer(modifier = Modifier.height(32.dp))
-            Button(modifier = Modifier.size(100.dp, 50.dp), onClick ={ navController.navigate("main") }) {
+            //Spacer(modifier = Modifier.height(32.dp))
+            Button(
+                onClick = { navController.navigate("home") }) {
                 Text("Return home")
-                LazyRow(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(communityDrawings, key = { it.uri.toString() }) { drawing ->
-                        Card(
-                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp)
+            }
+            LazyRow(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(communityDrawings, key = { it.uri.toString() }) { drawing ->
+                    Card(
+                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Row(
-                                modifier = Modifier.padding(12.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                AsyncImage(
-                                    model = drawing.uri,
-                                    contentDescription = drawing.title,
-                                    modifier = Modifier
-                                        .height(200.dp)
-                                        .width(200.dp),
-                                    contentScale = ContentScale.Crop
-                                )
+                            AsyncImage(
+                                model = drawing.uri,
+                                contentDescription = drawing.title,
+                                modifier = Modifier
+                                    .height(200.dp)
+                                    .width(200.dp),
+                                contentScale = ContentScale.Crop
+                            )
 
-                                Column(
-                                    verticalArrangement = Arrangement.SpaceEvenly,
-                                    horizontalAlignment = Alignment.Start,
-                                    modifier = Modifier.padding(start = 10.dp)
-                                ) {
-                                    Text(
-                                        text = drawing.title,
-                                        style = MaterialTheme.typography.titleMedium
-                                    )
-                                    Text(
-                                        text = "by ${drawing.author}",
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
+                            Column(
+                                verticalArrangement = Arrangement.SpaceEvenly,
+                                horizontalAlignment = Alignment.Start,
+                                modifier = Modifier.padding(start = 10.dp)
+                            ) {
+                                Text(
+                                    text = drawing.title,
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Text(
+                                    text = "by ${drawing.author}",
+                                    style = MaterialTheme.typography.bodySmall
+                                )
 //                                drawing.timestamp1?.let {
 //                                    Text(text = "Uploaded: $it", style = MaterialTheme.typography.bodySmall)
 //                                }
-                                    Button(onClick = {
-                                        drawingViewModel.saveImageAsCopy(drawing.title, 1000, 1000)
-                                        navController.navigate("main/$")
-                                    }) {
-                                        Text("Copy")
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-            }
-        }
-            // Portrait layout
-            else if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    item { Spacer(modifier = Modifier.height(32.dp)) }
-                    item { Button({ navController.navigate("main") }) { Text("Return home") } }
-                    items(communityDrawings, key = { it.uri.toString() }) { drawing ->
-                        Card(
-                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(12.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                AsyncImage(
-                                    model = drawing.uri,
-                                    contentDescription = drawing.title,
-                                    modifier = Modifier
-                                        .height(200.dp)
-                                        .width(200.dp),
-                                    contentScale = ContentScale.Crop
-                                )
-
-                                Column(
-                                    verticalArrangement = Arrangement.SpaceEvenly,
-                                    horizontalAlignment = Alignment.Start,
-                                    modifier = Modifier.padding(start = 10.dp)
-                                ) {
-                                    Text(
-                                        text = drawing.title,
-                                        style = MaterialTheme.typography.titleMedium
-                                    )
-                                    Text(
-                                        text = "by ${drawing.author}",
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
-                                    // TODO: Figure out timestamp implementation
-//                                drawing.timestamp.let {
-//                                    Text(text = "Uploaded: $it.", style = MaterialTheme.typography.bodySmall)
-//                                }
-                                    Button(onClick = {
-                                        drawingViewModel.saveImageAsCopy(drawing.title, 1000, 1000)
-                                        navController.navigate("main/$")
-                                    }) {
-                                        Text("Copy")
-                                    }
+                                Button(onClick = {
+                                    drawingViewModel.saveImageAsCopy(drawing.title, 1000, 1000)
+                                    navController.navigate("main/$")
+                                }) {
+                                    Text("Copy")
                                 }
                             }
                         }
@@ -253,3 +181,58 @@ fun CommunityScreen(viewModel: HomeViewModel, drawingViewModel: DrawingViewModel
             }
         }
     }
+    // Portrait layout
+    if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item { Spacer(modifier = Modifier.height(32.dp)) }
+            item { Button({ navController.navigate("home") }) { Text("Return home") } }
+            items(communityDrawings, key = { it.uri.toString() }) { drawing ->
+                Card(
+                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        AsyncImage(
+                            model = drawing.uri,
+                            contentDescription = drawing.title,
+                            modifier = Modifier
+                                .height(200.dp)
+                                .width(200.dp),
+                            contentScale = ContentScale.Crop
+                        )
+
+                        Column(
+                            verticalArrangement = Arrangement.SpaceEvenly,
+                            horizontalAlignment = Alignment.Start,
+                            modifier = Modifier.padding(start = 10.dp)
+                        ) {
+                            Text(
+                                text = drawing.title,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Text(
+                                text = "by ${drawing.author}",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                            // TODO: Figure out timestamp implementation
+//                                drawing.timestamp.let {
+//                                    Text(text = "Uploaded: $it.", style = MaterialTheme.typography.bodySmall)
+//                                }
+                            Button(onClick = {
+                                drawingViewModel.saveImageAsCopy(drawing.title, 1000, 1000)
+                                navController.navigate("main/$")
+                            }) {
+                                Text("Copy")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

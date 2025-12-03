@@ -120,7 +120,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
             // Landscape layout
             if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
 
-                Spacer(modifier = Modifier.height(32.dp))
+                //Spacer(modifier = Modifier.height(32.dp))
                 if(user != null) {
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(5.dp, 0.dp))
                     {
@@ -139,6 +139,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
+                        .padding(10.dp, 1.dp)
                 ) {
                     // New + Import Column
                     item {
