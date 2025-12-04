@@ -42,7 +42,6 @@ class DrawingViewModel @Inject constructor(
         private set
     private var currentStroke: Stroke? = null
     var background by mutableStateOf<Bitmap?>(null)
-        private set
     var brushColor by mutableStateOf(Color.Blue)
         internal set
     var brushSize by mutableFloatStateOf(12f)
