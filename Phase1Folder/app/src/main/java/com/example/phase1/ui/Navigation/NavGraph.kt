@@ -10,19 +10,27 @@ package com.example.phase1.ui.Navigation
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
+
+// 🔥 THESE WERE MISSING — Jetpack Compose Navigation imports
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+// 🔥 Needed for route decoding
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
+
 import com.example.phase1.ui.MainScreen.MainScreen
 import com.example.phase1.ui.SplashScreen.SplashScreen
 import com.example.phase1.ui.homescreen.HomeScreen
 import com.example.phase1.ui.analysis.AnalysisScreen
+import com.example.phase1.ui.communityscreen.CommunityScreen
+import com.example.phase1.ui.communityscreen.CommunityImageHolder
+import com.example.phase1.ui.login.LoginScreen
 import com.example.phase1.vm.DrawingViewModel
 import com.example.phase1.vm.HomeViewModel
-import java.net.URLDecoder
-import java.nio.charset.StandardCharsets
+import com.example.phase1.vm.LoginViewModel
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -59,6 +67,13 @@ fun NavGraph(navController: NavHostController) {
         // Main screen without a file
         composable("main") {
             val viewModel: DrawingViewModel = hiltViewModel()
+
+            // If coming from CommunityScreen
+            CommunityImageHolder.bitmap?.let {
+                viewModel.background = it
+                CommunityImageHolder.bitmap = null
+            }
+
             MainScreen(navController, viewModel, null)
         }
 
@@ -80,6 +95,19 @@ fun NavGraph(navController: NavHostController) {
                 StandardCharsets.UTF_8.toString()
             )
             AnalysisScreen(navController, decoded)
+        }
+
+        // Login screen
+        composable("login") {
+            val loginViewModel: LoginViewModel = hiltViewModel()
+            LoginScreen(navController, loginViewModel)
+        }
+
+        // Community Page
+        composable("community") {
+            val homeViewModel: HomeViewModel = hiltViewModel()
+            val drawingViewModel: DrawingViewModel = hiltViewModel()
+            CommunityScreen(homeViewModel, drawingViewModel, navController)
         }
     }
 }
