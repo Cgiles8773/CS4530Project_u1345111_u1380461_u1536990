@@ -9,6 +9,7 @@
 
 package com.example.phase1.ui.SplashScreen
 
+import android.content.res.Configuration
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.EaseOutBack
@@ -42,6 +43,8 @@ import kotlin.math.max
 
 @Composable
 fun SplashScreen(navController: NavController) {
+    val configuration = LocalConfiguration.current
+    val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
     // Trigger navigation after animation finishes
     LaunchedEffect(Unit) {
@@ -52,12 +55,72 @@ fun SplashScreen(navController: NavController) {
     }
 
     // UI of splash screen
-    RisingBallAnimation()
+    if (isPortrait) {
+        PortraitAnimation()
+    }
+    else {
+        LandscapeAnimation()
+    }
 
 }
 
 @Composable
-fun RisingBallAnimation() {
+fun LandscapeAnimation() {
+    val config = LocalConfiguration.current
+    val density = LocalDensity.current
+
+    val screenWidthPx = with(density) { config.screenWidthDp.dp.toPx() }
+    val travelPx = screenWidthPx * 0.50f  // travel 50% of screen width
+
+    // animate horizontal offset only (ball stays centered vertically)
+    val offsetX = remember { Animatable(0f) }
+
+    // animate the scale (1f = normal size)
+    val scale = remember { Animatable(1f) }
+
+    LaunchedEffect(Unit) {
+        // 1) Ball moves rightward
+        offsetX.animateTo(
+            targetValue = travelPx,
+            animationSpec = tween(
+                durationMillis = 1200,
+                easing = EaseOutBack
+            )
+        )
+
+        // Brief pause, then expand the ball
+        delay(50)
+        scale.animateTo(
+            targetValue = 12f,
+            animationSpec = tween(
+                durationMillis = 500,
+                easing = EaseIn
+            )
+        )
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Primary),
+        contentAlignment = Alignment.CenterStart // align left
+    ) {
+        Box(
+            modifier = Modifier
+                .offset { IntOffset(offsetX.value.toInt(), 0) } // horizontal movement
+                .size(100.dp)
+                .graphicsLayer {
+                    scaleX = scale.value
+                    scaleY = scale.value
+                    transformOrigin = TransformOrigin.Center
+                }
+                .background(OnPrimary, CircleShape)
+        )
+    }
+}
+
+@Composable
+fun PortraitAnimation() {
     val config = LocalConfiguration.current
     val density = LocalDensity.current
 
